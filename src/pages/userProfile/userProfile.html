@@ -1,18 +1,88 @@
-<!--
-  Generated template for the ProfilepagePage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
+  </ion-header>
+  
+  <ion-content>
+      <ion-row padding>
+        <!-- Avatar -->
+        <ion-col col-3>
+          <img [src]="userProfile.photoURL" class="avatar" alt="" onerror="this.src='./assets/imgs/default-avatar.jpg';">
+        </ion-col>
+        <!-- Information about user -->
+        <ion-col col-6 text-center >
+          <h6>{{numPosts}}</h6>
+          <p no-padding no-margin>Posts</p>
+        </ion-col>
+        <ion-col col-3 text-center>
+          <h6>{{numConnections}}</h6>
+          <p no-paddin no-margin>Peeps</p>
+        </ion-col>
+      </ion-row>
 
-  <ion-navbar>
-    <ion-title>UserProfile</ion-title>
-  </ion-navbar>
-
-</ion-header>
-
-
-<ion-content padding>
-
-</ion-content>
+      <!-- Edit/follow button -->
+      <ion-row no-padding no-margin>
+          <ion-col no-padding no-margin col-4></ion-col>
+            <ion-col no-padding no-margin text-center col-8>
+              <button (click)="viewCtrl.dismiss()" ion-button outline small>Back</button>
+            </ion-col>
+          <ion-col col-3></ion-col>
+        </ion-row>
+  
+      <div padding>
+        <p no-margin no-padding *ngIf="userProfile.displayName !== undefined && userProfile.displayName !== null; else showNoName" class="capitalize"><b>{{userProfile.displayName}}</b></p>
+        <ng-template #showNoName><p no-margin no-padding><b>Your Name Here</b></p></ng-template>
+        <p no-padding no-margin class="info" *ngIf="userProfile.info !== undefined; else showNoInfo">{{userProfile.info}}</p>
+        <ng-template #showNoInfo><p no-margin no-padding>Your About Info Here</p></ng-template>
+      </div>
+          
+       <!-- Segments -->
+      <div>
+        <ion-segment [(ngModel)]="profile_segment">
+          <ion-segment-button value="grid">
+            <ion-icon name="apps"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="list">
+            <ion-icon name="list"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+  
+      <!-- Segment content -->
+      <div [ngSwitch]="profile_segment">
+        <ion-list *ngSwitchCase="'grid'">
+          <ion-grid>
+            <ion-row >
+              <ion-col col-4 class="grid_img" *ngFor="let i of user_posts | sortPosts" (click)="showPostModal(i)" >
+                <img [src]="i.post_imgs[0]" alt="" (press)="onHold(i)">
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+    
+        <ion-list *ngSwitchCase="'list'">
+            <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of user_posts | sortPosts">
+  
+                <ion-item>
+                  <ion-avatar item-left>
+                    <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
+                  </ion-avatar>
+                  <h2 style="font-weight: bold">{{post.displayName}}</h2>
+                  <p>{{post.postedAt}}</p>
+                </ion-item>
+          
+                <ion-slides pager >
+                    <ion-slide *ngFor="let img of post.post_imgs" >
+                        <img src="{{img}}" alt="" class="post_img">
+                    </ion-slide>
+                </ion-slides>
+          
+                <ion-card-content>
+                  <p><strong>{{post.displayName}}</strong> {{post.description}}</p>
+                </ion-card-content>
+          
+                <hr>
+            </ion-card>
+        </ion-list>
+      </div>
+    
+  </ion-content>
+  

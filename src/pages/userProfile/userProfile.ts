@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, ViewController } from 'ionic-angular';
+import { LoadProvider } from '../../providers/load/load';
+import { PostPage } from '../profile/profile';
 
 /**
  * Generated class for the ProfilepagePage page.
@@ -8,18 +10,42 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
  * Ionic pages and navigation.
  */
 
-@IonicPage()
 @Component({
   selector: 'page-user-profile',
   templateUrl: 'userProfile.html',
 })
 export class UserProfilePage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  profile_segment = 'grid';
+  userProfile = {
+    displayName: '',
+    info: '',
+    photoURL: ''
+  }
+  numPosts = 0;
+  numConnections = 0;
+  user_posts = [];
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    private load: LoadProvider,
+    public modalCtrl: ModalController,
+    public viewCtrl: ViewController) {
+      
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProfilepagePage');
+  ionViewWillLoad = async () => {
+    let post = this.navParams.get('post');
+    this.userProfile = await this.load.getUser(post);
+    let data = await this.load.getUserPostsAndConnections(this.userProfile);
+    console.log(data);
+    this.numConnections = data.connections;
+    this.user_posts = data.posts;
+    this.numPosts = data.posts.length;
+  }
+
+  showPostModal = (post) => {
+    let postModal = this.modalCtrl.create(PostPage, {post: post});
+    postModal.present();
   }
 
 }

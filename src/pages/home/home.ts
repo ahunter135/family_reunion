@@ -87,8 +87,8 @@ export class HomePage {
     });
   }
 
-  showProfile = () => {
-    let profileModal = this.modalCtrl.create(UserProfilePage);
+  showProfile = (post) => {
+    let profileModal = this.modalCtrl.create(UserProfilePage, {post: post});
     profileModal.present();
     profileModal.onDidDismiss(data => {
 

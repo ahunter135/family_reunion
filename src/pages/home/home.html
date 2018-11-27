@@ -17,7 +17,7 @@
   </ion-refresher>
   <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of load.connection_posts">
 
-      <ion-item (click)="showProfile()">
+      <ion-item (click)="showProfile(post)">
         <ion-avatar item-left>
           <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
         </ion-avatar>

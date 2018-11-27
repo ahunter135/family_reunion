@@ -30,6 +30,7 @@ import { PipesModule } from '../pipes/pipes.module';
 import { LongPressModule } from 'ionic-long-press';
 import { AdMobFree } from '@ionic-native/admob-free';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { UserProfilePage } from '../pages/userProfile/userProfile';
 
 firebase.initializeApp({
   apiKey: "AIzaSyBPNa8q-OzZnjJIpdmyefFJ_HXSmmP3Rqo",
@@ -55,7 +56,8 @@ firebase.initializeApp({
     PopoverPage,
     PostPage,
     ConnectionPage,
-    SettingsPage
+    SettingsPage,
+    UserProfilePage
   ],
   imports: [
     BrowserModule,
@@ -79,7 +81,8 @@ firebase.initializeApp({
     PopoverPage,
     PostPage,
     ConnectionPage,
-    SettingsPage
+    SettingsPage,
+    UserProfilePage
   ],
   providers: [
     StatusBar,

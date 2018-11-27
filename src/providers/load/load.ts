@@ -49,8 +49,27 @@ export class LoadProvider {
     this.user_posts = [];
     this.connection_posts = [];
   }
-  getUser = async () => {
-    return this.user;
+
+  getUser = async (user) => {
+    let userProfile = await this.db.collection('user-profiles').doc(user.uid).get();
+    return userProfile.data().data;
+  }
+
+  getUserPostsAndConnections = async (user) => {
+    let posts = await this.db.collection('user-profiles').doc(user.uid).collection('posts').get();
+    let connections = await this.db.collection('user-profiles').doc(user.uid).collection('connections').get();
+    let data = {
+      posts: [],
+      connections: 0
+    };
+    await posts.forEach(async doc => {
+      data.posts.push(doc.data());
+    })
+    await connections.forEach(async doc => {
+      data.connections++;
+    });
+
+    return data;
   }
 
   loadHome = async () => {
@@ -87,7 +106,9 @@ export class LoadProvider {
       await this.user_connections.forEach(async connection => {
         let posts = await this.db.collection('user-profiles').doc(connection.uid).collection('posts').get();
         await posts.forEach(post => {
-          this.connection_posts.push(post.data());
+          let data = post.data();
+          data.uid = connection.uid;
+          this.connection_posts.push(data);
         });
 
         this.storage.set('home-posts', this.connection_posts);
