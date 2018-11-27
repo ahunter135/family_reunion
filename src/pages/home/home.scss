@@ -1,0 +1,24 @@
+page-home {
+    .emptyText {
+        opacity: 0.5;
+        text-align: center;
+        padding-top: 30%;
+    }
+    .emptyText2 {
+        opacity: 0.5;
+        text-align: center;
+    }
+    .avatar-image {
+        transform: rotate(-90deg);
+    }
+
+    /* Card Content */
+    .card {
+        width: 100vw !important;
+    }
+
+    .post_img {
+        width: 100%;
+        height: 500px;
+    }
+}

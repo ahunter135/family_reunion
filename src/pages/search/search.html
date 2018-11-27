@@ -1,0 +1,18 @@
+<ion-header>
+    <ion-searchbar class="searchbar" (input)="getItems($event)"></ion-searchbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item *ngFor="let s of search_data">
+          <ion-thumbnail item-start>
+            <img src="{{s.photoURL}}" class="avatar-image" onerror="this.src='./assets/imgs/default-avatar.jpg'">
+          </ion-thumbnail>
+          <h2 class="capitalize">{{s.displayName}}</h2>
+          <p>{{s.info}}</p>
+          <button ion-button clear (click)="removeConnection(s);" *ngIf="connected; else showNotConnected" item-end>Remove Member</button>
+          <ng-template #showNotConnected>
+            <button ion-button clear (click)="addAsConnection(s);" item-end>Add Member</button>
+          </ng-template>
+        </ion-item>
+      </ion-list>
+</ion-content>

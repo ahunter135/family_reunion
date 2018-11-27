@@ -1,0 +1,37 @@
+<ion-content class="main-modal">
+        <div class="modal">
+    
+            <ion-row>
+                <ion-col col-2>
+                    <img [src]="post.profile_img" class="avatar-modal" alt=""> 
+                </ion-col>
+    
+                <ion-col col-8>
+                    <p><strong>{{ post.displayName }}</strong></p>
+                    <p>{{post.postedAt}}</p>
+                </ion-col>
+
+                <ion-col col-2><span style="float: right; font-size: 17px" (click)="viewCtrl.dismiss()"><ion-icon name="ios-close-circle-outline"></ion-icon></span></ion-col>
+    
+            </ion-row>
+    
+            <!-- Post image -->
+            <div *ngIf="!loading; else showLoading">
+                <ion-slides pager>
+                    <ion-slide *ngFor="let img of post.post_imgs">
+                        <img src="{{img}}" alt="" class="post_img">
+                    </ion-slide>
+                </ion-slides>
+            </div>
+            <ng-template #showLoading>
+                <img src="./assets/imgs/loading.png" class="post_img">
+            </ng-template>
+    
+            <ion-row text-center> 
+                <ion-item>
+                    <p><strong>{{post.displayName}}</strong> {{post.description}}</p>
+                </ion-item>
+            </ion-row>
+        </div>
+          
+    </ion-content>

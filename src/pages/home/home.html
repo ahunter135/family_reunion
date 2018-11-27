@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="showSearch()" [disabled]="disableSearch" end>
+        <ion-icon color="white" name="ios-search"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+  </ion-header>
+
+<ion-content>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-dropdown"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"></ion-refresher-content>
+  </ion-refresher>
+  <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of load.connection_posts">
+
+      <ion-item (click)="showProfile()">
+        <ion-avatar item-left>
+          <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
+        </ion-avatar>
+        <h2 style="font-weight: bold">{{post.displayName}}</h2>
+        <p>{{post.postedAt}}</p>
+      </ion-item>
+
+      <ion-slides pager >
+          <ion-slide *ngFor="let img of post.post_imgs" >
+              <img src="{{img}}" alt="" class="post_img">
+          </ion-slide>
+      </ion-slides>
+
+      <ion-card-content>
+        <p><strong>{{post.displayName}}</strong> {{post.description}}</p>
+      </ion-card-content>
+
+      <hr>
+  </ion-card>
+
+  <div *ngIf="load.connection_posts.length === 0;">
+      <p class="emptyText">Add some family members to view their posts!</p>
+      <p class="emptyText2">Just search their Family Code</p>
+  </div>
+  <ion-fab right bottom>
+    <button ion-fab color="dark" (click)="submitPost()"><ion-icon name="ios-add"></ion-icon></button>
+  </ion-fab>
+</ion-content>

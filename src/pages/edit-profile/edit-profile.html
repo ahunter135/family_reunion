@@ -1,0 +1,52 @@
+<ion-header>
+    <ion-navbar>
+      <ion-buttons>
+        <button ion-button (click)="viewCtrl.dismiss();">
+          <ion-icon color="white" name="close"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-buttons end>
+        <button ion-button icon-only (click)="saveProfile()" end>
+          <ion-icon color="white" name="ios-checkmark"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ion-navbar>
+    </ion-header>
+
+<ion-content padding>
+
+  <!-- Profile picture -->
+  <div text-center>
+    <img [src]="photoURL" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="edit-avatar" alt="">
+    <p class="change-text" (click)="selectAvatar();">Change Photo</p>
+  </div>
+
+  <!-- Form -->
+  <ion-item>
+    <ion-icon name="ios-clipboard-outline" item-start></ion-icon>
+    <ion-input type="text" *ngIf="load.user.displayName !== undefined && load.user.displayName !== null; else showNoName" [(ngModel)]="displayName" [value]="load.user.displayName"></ion-input>
+    <ng-template #showNoName>
+        <ion-input type="text" [(ngModel)]="displayName" placeholder="Enter Name Here"></ion-input>
+    </ng-template>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="ios-quote-outline" color="gray" item-start></ion-icon>
+    <ion-textarea placeholder="" *ngIf="load.user_data.info !== undefined; else showNoInfo" [(ngModel)]="load.user_data.info" [value]="load.user_data.info"></ion-textarea>
+    <ng-template #showNoInfo>
+        <ion-textarea type="text" placeholder="Enter Info Here" [(ngModel)]="load.user_data.info" [value]="load.user_data.info"></ion-textarea>
+    </ng-template>
+  </ion-item>
+
+  <!-- Private information form -->
+  <div margin-top padding-top>
+    <h4 no-margin no-padding class="info-text">Private Information</h4>
+    <hr class="custom-hr" color="gray">
+  </div>
+  
+  <ion-item>
+    <ion-icon name="ios-mail-outline" item-start></ion-icon>
+    <ion-input type="text" [value]="load.user.email" disabled></ion-input>
+  </ion-item>
+
+</ion-content>

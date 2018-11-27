@@ -1,0 +1,50 @@
+<!--
+  Generated template for the SignUpPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-content padding>
+  <div class="div-padding">
+    <ion-row>
+      <ion-col>
+        <ion-list inset>
+
+          <ion-item>
+            <ion-label style="color: black">Email</ion-label>
+            <ion-input type="text" required [ngModel]="user.email" (keyup)="onKey($event, 'email')" autocapitalize="none"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Password</ion-label>
+            <ion-input type="password" required minlength="6" [ngModel]="user.password" (keyup)="onKey($event, 'pass')"></ion-input>
+          </ion-item>
+          <small style="color: red;" [hidden]="user.password.length >= 6 || user.password == ''">
+            {{user.password.length}} of 6 Characters
+          </small>
+
+          <ion-item>
+            <ion-label>Confirm Password</ion-label>
+            <ion-input type="password" required [ngModel]="user.passwordConf" (keyup)="onKey($event, 'conf')"></ion-input>
+          </ion-item>
+          <small style="color: red;" [hidden]="(user.password == user.passwordConf) || user.password == ''">
+            Passwords Do Not Match
+          </small>
+
+        </ion-list>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <button ion-button round class="login-button" (click)="submit()"  [disabled]="disabled">Sign Up</button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <a class="sign-up-button" (click)="cancelModal()">Cancel</a>
+      </ion-col>
+    </ion-row>
+
+  </div>
+</ion-content>

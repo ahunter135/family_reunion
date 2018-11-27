@@ -1,0 +1,21 @@
+<ion-header>
+    <ion-navbar>
+      <ion-buttons>
+        <button ion-button icon-only (click)="viewCtrl.dismiss()">
+          <ion-icon color="white" name="ios-arrow-round-back"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ion-navbar>
+    </ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item *ngFor="let item of load.user_connections" (click)="showConnection(item)">
+          <ion-thumbnail item-start>
+            <img src="{{item.photoURL}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image">
+          </ion-thumbnail>
+          <h2>{{item.displayName}}</h2>
+          <p>{{item.info}}</p>
+          <button ion-button clear (click)="removeConnection(item);" item-end>Remove Peep</button>
+        </ion-item>
+      </ion-list>
+</ion-content>
