@@ -1,0 +1,7 @@
+{
+  "name": "family-reunion",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

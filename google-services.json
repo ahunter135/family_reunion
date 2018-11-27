@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "174075668194",
+    "firebase_url": "https://family-reunion-15435.firebaseio.com",
+    "project_id": "family-reunion-15435",
+    "storage_bucket": "family-reunion-15435.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174075668194:android:d509c17be7cea9eb",
+        "android_client_info": {
+          "package_name": "com.austinhunter.family_reunion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174075668194-cekv3t3sjuk3nbo38s0oh4m4me52v791.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp7iQAzJJ9K9oEglvoNnhl30KXXjqzQog"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
