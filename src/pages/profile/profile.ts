@@ -200,8 +200,17 @@ export class SettingsPage {
    }
 
    removeAds = async () => {
-     let purchase = await this.iap.buy('com.austinhunter.remove_ads');
-     console.log(purchase);
+     this.iap.buy('com.austinhunter.remove_ads').then(response => {
+       this.load.user_data.role = 0;
+       this.load.updateUserRole();
+     }).catch(error => alert(JSON.stringify(error.message)));
+   }
+
+   restore = () => {
+     this.iap.restorePurchases().then(response => {
+      this.load.user_data.role = 0;
+       this.load.updateUserRole();
+     }).catch(error => console.log(error));
    }
 
    

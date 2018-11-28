@@ -19,23 +19,22 @@
 
       <ion-item (click)="showProfile(post)">
         <ion-avatar item-left>
-          <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
+          <img src="{{post.profile_img}}" style="" onerror="this.src='./assets/imgs/default-avatar.jpg';" class="avatar-image" />
         </ion-avatar>
-        <h2 style="font-weight: bold">{{post.displayName}}</h2>
+        <h2 style="font-weight: bold" class="capitalize">{{post.displayName}}</h2>
         <p>{{post.postedAt}}</p>
       </ion-item>
 
-      <ion-slides pager >
+      <ion-slides pager>
           <ion-slide *ngFor="let img of post.post_imgs" >
               <img src="{{img}}" alt="" class="post_img">
           </ion-slide>
       </ion-slides>
 
       <ion-card-content>
-        <p><strong>{{post.displayName}}</strong> {{post.description}}</p>
+        <p class="capitalize"><strong>{{post.displayName}}</strong> {{post.description}}</p>
       </ion-card-content>
 
-      <hr>
   </ion-card>
 
   <div *ngIf="load.connection_posts.length === 0;">

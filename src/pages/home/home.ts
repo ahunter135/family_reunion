@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, Events, ModalController, ActionSheetController, ViewController, LoadingController } from 'ionic-angular';
+import { NavController, Events, ModalController, ActionSheetController, ViewController, LoadingController, AlertController } from 'ionic-angular';
 import { LoadProvider } from '../../providers/load/load';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Crop } from '@ionic-native/crop';
@@ -11,12 +11,15 @@ import { SearchPage } from '../search/search';
 import { AdMobFree } from '@ionic-native/admob-free';
 import { Storage } from '@ionic/storage';
 import { UserProfilePage } from '../userProfile/userProfile';
+import { Slides } from 'ionic-angular';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
+  @ViewChild(Slides) slides: Slides;
   disableSearch;
   loading = true;
   constructor(
@@ -26,7 +29,8 @@ export class HomePage {
     public modalCtrl: ModalController,
     public loader: LoadingController,
     private admob: AdMobFree,
-    private storage: Storage
+    private storage: Storage,
+    public alertCtrl: AlertController
   ) {}
 
   ionViewDidLoad = async () => {
@@ -46,8 +50,7 @@ export class HomePage {
       else this.disableSearch = true;
     })
     this.events.subscribe('posts:loaded', posts => {
-      this.load.connection_posts = this.load.connection_posts;
-      this.storage.set('home-posts', this.load.connection_posts);
+      //this.storage.set('home-posts', this.load.connection_posts);
     })
   }
 
@@ -60,31 +63,40 @@ export class HomePage {
   }
 
   submitPost = () => {
-    let postModal = this.modalCtrl.create(AddPostPage);
-    postModal.present();
-    postModal.onDidDismiss(async data => {
-      if (data) {
-        this.loading = true;
+    if (this.load.user_data.displayName === null || this.load.user_data.photoURL === null) {
+      let prompt = this.alertCtrl.create({
+        title: 'Setup Profile',
+        subTitle: 'You need to setup your profile before you can post anything!',
+        buttons: ['OK']
+      });
+      prompt.present();
+    } else {
+      let postModal = this.modalCtrl.create(AddPostPage);
+      postModal.present();
+      postModal.onDidDismiss(async data => {
+        if (data) {
+          this.loading = true;
 
-        let pendingPosts = data.pendingPosts;
-        let post = data.post;
-        for (let i = 0; i < pendingPosts.length; i++) {
-          let data = await this.load.uploadPostImage(pendingPosts[i]);
-          this.loading = false;
-          post.post_imgs.push(data);
+          let pendingPosts = data.pendingPosts;
+          let post = data.post;
+          for (let i = 0; i < pendingPosts.length; i++) {
+            let data = await this.load.uploadPostImage(pendingPosts[i]);
+            this.loading = false;
+            post.post_imgs.push(data);
+          }
+          
+          this.load.uploadPost(post);
+          if (this.load.role === 1) {
+            this.admob.interstitial.config({
+              id: 'ca-app-pub-7853858495093513/4773247160',
+              isTesting: false,
+              autoShow: true
+            });
+            await this.admob.interstitial.prepare();
+          }
         }
-        
-        this.load.uploadPost(post);
-        if (this.load.role === 1) {
-          this.admob.interstitial.config({
-            id: 'ca-app-pub-7853858495093513/4773247160',
-            isTesting: false,
-            autoShow: true
-          });
-          await this.admob.interstitial.prepare();
-        }
-      }
-    });
+      });
+    }
   }
 
   showProfile = (post) => {
@@ -112,7 +124,8 @@ export class AddPostPage {
    displayName: this.load.user.displayName,
    post_imgs: [],
    description: null,
-   postedAt: moment().format("MMM Do YY")
+   postedAt: moment().format("MMM Do YY, h:mm a"),
+   timestamp: moment().format()
  }
  loading = true;
  numImages;
@@ -130,51 +143,73 @@ export class AddPostPage {
 
  ionViewDidLoad = async () => {
   this.loading = true;
-  let options = {
-    maximumImagesCount: 5,
-    width: 1080,
-    height: 1080,
-    quality: 100
-  };
-  let permission = await this.imagePicker.hasReadPermission();
-  if (permission) {
-    this.imagePicker.getPictures(options).then(async (results) => {
-      if (results.length > 0) {
-        /*
-        let newImage = await this.crop.crop(results[0], {
-          quality: 100,
-          targetHeight: 1080,
-          targetWidth: 1080
-        });
-        */
-       this.numImages = results.length;
-       for (let i = 0; i < results.length; i++) {
-        let newImageURL = await this.encodeImageUri(results[i]);
-        this.pendingPosts.push(newImageURL);
-       }
-       this.loading = false;
-      } else this.viewCtrl.dismiss();
-    }, (err) => {
-      this.viewCtrl.dismiss();
-    });
-  } else {
-    this.imagePicker.requestReadPermission();
-    this.viewCtrl.dismiss();
-  }
+  const actionSheet = this.actionSheetCtrl.create({
+    title: 'Image Source',
+    buttons: [
+      {
+        text: 'Photo Library',
+        handler: async () => {
+          let permission = await this.imagePicker.hasReadPermission();
+          if (permission) {
+            let options = {
+              maximumImagesCount: 5,
+              width: 1080,
+              height: 1080,
+              quality: 100
+            };
+            this.imagePicker.getPictures(options).then(async (results) => {
+              if (results.length > 0) {
+              this.numImages = results.length;
+              for (let i = 0; i < results.length; i++) {
+                let newImage = await this.crop.crop(results[i], {
+                  quality: 100,
+                  targetHeight: 1080,
+                  targetWidth: 1080
+                });
+                let newImageURL = await this.encodeImageUri(newImage);
+                this.pendingPosts.push(newImageURL);
+              }
+              this.loading = false;
+              } else this.viewCtrl.dismiss();
+            }, (err) => {
+              this.viewCtrl.dismiss();
+            });
+          } else {
+            this.imagePicker.requestReadPermission();
+            this.viewCtrl.dismiss();
+          }
+        }
+      },
+      {
+        text: 'Camera',
+        handler: () => {
+          let options = {
+            targetHeight: 1080,
+            targetWidth: 1080,
+            quality: 100,
+            destinationType: this.camera.DestinationType.FILE_URI,
+            encodingType: this.camera.EncodingType.JPEG,
+            sourceType: this.camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            correctOrientation: true,
+            cameraDirection: 1,
+            saveToPhotoAlbum: true
+          };
+          this.showCamera(options);
+        }
+      }
+    ]
+  });
+  actionSheet.present();
  }
 
  showCamera(options) {
   this.camera.getPicture(options).then(async (imageData) => {
-    /*
-    let newImage = await this.crop.crop(imageData, {
-      quality: 100,
-      targetHeight: 1080,
-      targetWidth: 1080
-    });
-    */
+    this.numImages = 1;
     let newImageURL = await this.encodeImageUri(imageData);
-    let data = await this.load.uploadPostImage(newImageURL);
-    this.post.post_imgs = data;
+    this.pendingPosts.push(newImageURL);
+   
+    this.loading = false;
   }).catch((err) => {
     this.viewCtrl.dismiss();
   })

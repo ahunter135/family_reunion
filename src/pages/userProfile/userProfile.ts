@@ -30,14 +30,13 @@ export class UserProfilePage {
     private load: LoadProvider,
     public modalCtrl: ModalController,
     public viewCtrl: ViewController) {
-      
+      this.userProfile.photoURL = this.navParams.get('post').photoURL;
   }
 
   ionViewWillLoad = async () => {
     let post = this.navParams.get('post');
     this.userProfile = await this.load.getUser(post);
     let data = await this.load.getUserPostsAndConnections(this.userProfile);
-    console.log(data);
     this.numConnections = data.connections;
     this.user_posts = data.posts;
     this.numPosts = data.posts.length;

@@ -5,7 +5,7 @@
       <ion-row padding>
         <!-- Avatar -->
         <ion-col col-3>
-          <img [src]="userProfile.photoURL" class="avatar" alt="" onerror="this.src='./assets/imgs/default-avatar.jpg';">
+          <img src="{{userProfile.photoURL}}" class="avatar" alt="" onerror="this.src='./assets/imgs/default-avatar.jpg';">
         </ion-col>
         <!-- Information about user -->
         <ion-col col-6 text-center >
@@ -51,8 +51,8 @@
         <ion-list *ngSwitchCase="'grid'">
           <ion-grid>
             <ion-row >
-              <ion-col col-4 class="grid_img" *ngFor="let i of user_posts | sortPosts" (click)="showPostModal(i)" >
-                <img [src]="i.post_imgs[0]" alt="" (press)="onHold(i)">
+              <ion-col col-4 *ngFor="let i of user_posts | sortPosts" (click)="showPostModal(i)" >
+                <img [src]="i.post_imgs[0]" alt="" (press)="onHold(i)" class="grid_img">
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -63,9 +63,9 @@
   
                 <ion-item>
                   <ion-avatar item-left>
-                    <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
+                    <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg';" class="avatar-image" />
                   </ion-avatar>
-                  <h2 style="font-weight: bold">{{post.displayName}}</h2>
+                  <h2 style="font-weight: bold" class="capitalize">{{post.displayName}}</h2>
                   <p>{{post.postedAt}}</p>
                 </ion-item>
           
@@ -76,7 +76,7 @@
                 </ion-slides>
           
                 <ion-card-content>
-                  <p><strong>{{post.displayName}}</strong> {{post.description}}</p>
+                  <p class="capitalize"><strong>{{post.displayName}}</strong> {{post.description}}</p>
                 </ion-card-content>
           
                 <hr>

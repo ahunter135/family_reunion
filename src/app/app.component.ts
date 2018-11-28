@@ -29,8 +29,7 @@ export class MyApp {
     platform.ready().then(async () => {
       let self = this;
       this.storage.remove('home-posts');
-      this.load.products = await this.iap.getProducts(['com.austinhunter.remove_ads']);
-      console.log(this.load.products);
+      this.load.products = await this.iap.getProducts(['com.austinhunter.remove_ads']).catch(error => console.log(error));
       fcm.getToken().then(token => {
         self.load.token = token;
       });

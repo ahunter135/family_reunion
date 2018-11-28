@@ -3,11 +3,11 @@
     
             <ion-row>
                 <ion-col col-2>
-                    <img [src]="post.profile_img" class="avatar-modal" alt=""> 
+                    <img [src]="post.profile_img" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-modal" alt=""> 
                 </ion-col>
     
                 <ion-col col-8>
-                    <p><strong>{{ post.displayName }}</strong></p>
+                    <p class="capitalize"><strong>{{ post.displayName }}</strong></p>
                     <p>{{post.postedAt}}</p>
                 </ion-col>
 
@@ -29,7 +29,7 @@
     
             <ion-row text-center> 
                 <ion-item>
-                    <p><strong>{{post.displayName}}</strong> {{post.description}}</p>
+                    <p class="capitalize"><strong>{{post.displayName}}</strong> {{post.description}}</p>
                 </ion-item>
             </ion-row>
         </div>

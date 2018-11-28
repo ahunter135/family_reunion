@@ -5,7 +5,7 @@
     <ion-list>
         <ion-item *ngFor="let s of search_data">
           <ion-thumbnail item-start>
-            <img src="{{s.photoURL}}" class="avatar-image" onerror="this.src='./assets/imgs/default-avatar.jpg'">
+            <img src="{{s.photoURL}}" class="avatar-image" onerror="this.src='./assets/imgs/default-avatar.jpg';">
           </ion-thumbnail>
           <h2 class="capitalize">{{s.displayName}}</h2>
           <p>{{s.info}}</p>

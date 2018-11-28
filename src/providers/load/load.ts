@@ -17,7 +17,8 @@ export class LoadProvider {
     token: this.token,
     displayName: '',
     photoURL: '',
-    uid: ''
+    uid: '',
+    role: 1
   };
   user_connections = [];
   connection_posts = [];
@@ -43,7 +44,8 @@ export class LoadProvider {
       token: this.token,
       displayName: '',
       photoURL: '',
-      uid: ''
+      uid: '',
+      role: 0
     };
     this.user_connections = [];
     this.user_posts = [];
@@ -110,7 +112,7 @@ export class LoadProvider {
           data.uid = connection.uid;
           this.connection_posts.push(data);
         });
-
+        this.connection_posts = this.connection_posts.reverse();
         this.storage.set('home-posts', this.connection_posts);
         this.events.publish('posts:loaded');
       })
@@ -127,7 +129,8 @@ export class LoadProvider {
       token: this.token,
       displayName: '',
       photoURL: '',
-      uid: ''
+      uid: '',
+      role: 1
     };
     this.db.collection('user-profiles').doc(this.user.uid).onSnapshot(function(doc) {
       if (doc.data())
@@ -148,7 +151,12 @@ export class LoadProvider {
       }
     });
   }
-
+  updateUserRole = () => {
+    let self = this;
+    this.db.collection('user-profiles').doc(this.user.uid).update({
+      data: self.user_data
+    });
+  }
   async uploadImage(file) {
     let today = moment().format('YYYYMMDD');
     let storageRef = firebase.storage().ref();
