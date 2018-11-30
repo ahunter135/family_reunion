@@ -1,0 +1,17 @@
+<ion-content>
+    <ion-list>
+        <ion-item *ngFor="let item of load.user_connections">
+            <ion-thumbnail item-start>
+                <img src="{{item.photoURL}}" onerror="this.src='./assets/imgs/default-avatar.jpg';" class="avatar-image">
+            </ion-thumbnail>
+            <h2 class="capitalize">{{item.displayName}}</h2>
+            <p>{{item.info}}</p>
+            <button ion-button clear (click)="sendMessage(item);" item-end>Send Message</button>
+        </ion-item>
+    </ion-list>
+</ion-content>
+<ion-footer (click)="viewCtrl.dismiss()">
+    <ion-toolbar>
+        <p text-center><ion-icon name="close"></ion-icon> Cancel</p>
+    </ion-toolbar>
+</ion-footer>

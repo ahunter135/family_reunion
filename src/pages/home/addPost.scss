@@ -23,7 +23,12 @@ page-add-post {
 
   .post_img {
       width: 100%;
-      height: 450px;
+      height: 100%;
+  }
+
+  .anotherPhotoButton {
+    text-align: center;
+    padding-bottom: 8px;
   }
 
   .username-modal {

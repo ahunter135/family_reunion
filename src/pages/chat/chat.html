@@ -1,17 +1,38 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="white">
     <ion-title>
-      Contact
+      Chats
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
-    </ion-item>
-  </ion-list>
+    <ion-refresher (ionRefresh)="refresh($event)">
+        <ion-refresher-content
+          pullingIcon="arrow-dropdown"
+          pullingText="Pull to refresh"
+          refreshingSpinner="circles"></ion-refresher-content>
+      </ion-refresher>
+    <ion-list>
+        <ion-item no-lines *ngFor="let m of chats" (click)="goToMessage(m)">
+          <ion-avatar item-left>
+            <img [src]="m.receiver.photoURL"  *ngIf="isCurrentUser(m.sender.uid); else showOtherImg">
+            <ng-template #showOtherImg>
+                <img [src]="m.sender.photoURL">
+            </ng-template>
+          </ion-avatar>
+          <h2 style="font-weight: bold" class="capitalize" *ngIf="isCurrentUser(m.sender.uid); else showOtherName">{{ m.receiver.displayName }}</h2>
+          <ng-template #showOtherName>
+            <h2 style="font-weight: bold" class="capitalize" >{{ m.sender.displayName }}</h2>
+          </ng-template>
+          <p>{{ m.message }} <ion-note item-right style="padding-left: 2px; float: right;">{{ m.time }}</ion-note></p>
+          
+        </ion-item>
+      </ion-list>
+    
 </ion-content>
+<ion-footer (click)="goNewMessage()">
+    <ion-toolbar>
+       <p text-center><ion-icon name="add"></ion-icon> New Message</p>
+    </ion-toolbar>
+</ion-footer>

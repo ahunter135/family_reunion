@@ -9,6 +9,7 @@ import { Storage } from '@ionic/storage';
 import { LoadProvider } from '../providers/load/load';
 import { AdMobFree } from '@ionic-native/admob-free';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 @Component({
   templateUrl: 'app.html'
@@ -24,12 +25,14 @@ export class MyApp {
     public load: LoadProvider,
     fcm: FCM,
     private admob: AdMobFree,
-    private iap: InAppPurchase
+    private iap: InAppPurchase,
+    private screenOrientation: ScreenOrientation
   ) {
     platform.ready().then(async () => {
       let self = this;
       this.storage.remove('home-posts');
       this.load.products = await this.iap.getProducts(['com.austinhunter.remove_ads']).catch(error => console.log(error));
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT_PRIMARY);
       fcm.getToken().then(token => {
         self.load.token = token;
       });

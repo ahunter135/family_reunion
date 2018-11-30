@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController, PopoverController, ViewController, Platform, ToastCmp, ToastController, NavParams, ActionSheetController } from 'ionic-angular';
+import { NavController, ModalController, PopoverController, ViewController, ToastController, NavParams, ActionSheetController } from 'ionic-angular';
 import { LoadProvider, LoginPage } from '../../providers/load/load';
 import { EditProfile } from '../edit-profile/edit-profile';
 import { Clipboard } from '@ionic-native/clipboard';
@@ -7,6 +7,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import firebase from 'firebase';
 import { Storage } from '@ionic/storage';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { AppVersion } from '@ionic-native/app-version';
 
 @Component({
   selector: 'page-profile',
@@ -86,7 +87,6 @@ export class ProfilePage {
       <ion-list-header>Options</ion-list-header>
       <button ion-item (click)="copyCode()">Copy Family Code</button>
       <button ion-item (click)="shareCode()">Share Family Code</button>
-      <button ion-item (click)="openSettings()">Settings</button>
       <button ion-item (click)="logout()">Logout</button>
     </ion-list>
   `
@@ -99,7 +99,6 @@ export class PopoverPage {
     private socialSharing: SocialSharing,
     private toast: ToastController,
     private storage: Storage,
-    private navCtrl: NavController,
     private modalCtrl: ModalController
   ) {}
 
@@ -138,12 +137,6 @@ export class PopoverPage {
     }
     this.socialSharing.shareWithOptions(options);
     this.close();
-  }
-
-  openSettings = () => {
-    let settingsModal = this.modalCtrl.create(SettingsPage);
-    settingsModal.present();
-    this.viewCtrl.dismiss();
   }
 }
 
@@ -191,18 +184,33 @@ export class ConnectionPage {
   templateUrl: 'settings.html'
 })
 export class SettingsPage {
+
+  appVersionNumber = '';
+
   constructor(
     public viewCtrl: ViewController,
     public navParams: NavParams,
     public load: LoadProvider,
-    public iap: InAppPurchase
+    public iap: InAppPurchase,
+    public toast: ToastController,
+    private appVersion: AppVersion
    ) {
+   }
+
+   ionViewWillLoad = async () => {
+     this.appVersionNumber = await this.appVersion.getVersionNumber();
    }
 
    removeAds = async () => {
      this.iap.buy('com.austinhunter.remove_ads').then(response => {
        this.load.user_data.role = 0;
        this.load.updateUserRole();
+       let toast = this.toast.create({
+        message: 'Ads Removed, Thank You!',
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
      }).catch(error => alert(JSON.stringify(error.message)));
    }
 
@@ -210,6 +218,12 @@ export class SettingsPage {
      this.iap.restorePurchases().then(response => {
       this.load.user_data.role = 0;
        this.load.updateUserRole();
+       let toast = this.toast.create({
+        message: 'Ads Removed, Thank You!',
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
      }).catch(error => console.log(error));
    }
 

@@ -18,8 +18,8 @@
             <!-- Post image -->
             <div *ngIf="!loading; else showLoading">
                 <ion-slides pager>
-                    <ion-slide *ngFor="let img of post.post_imgs">
-                        <img src="{{img}}" alt="" class="post_img">
+                    <ion-slide *ngFor="let img of post.post_imgs"  class="post_img">
+                        <img src="{{img}}" alt="">
                     </ion-slide>
                 </ion-slides>
             </div>

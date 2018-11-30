@@ -5,7 +5,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { ProfilePage, PopoverPage, PostPage, ConnectionPage, SettingsPage } from '../pages/profile/profile';
-import { ChatPage } from '../pages/chat/chat';
+import { ChatPage, NewMessagePage, ChatDetailPage } from '../pages/chat/chat';
 import { HomePage, AddPostPage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
@@ -31,6 +31,9 @@ import { LongPressModule } from 'ionic-long-press';
 import { AdMobFree } from '@ionic-native/admob-free';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { UserProfilePage } from '../pages/userProfile/userProfile';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { ChatProvider } from '../providers/chat/chat';
+import { AppVersion } from '@ionic-native/app-version';
 
 firebase.initializeApp({
   apiKey: "AIzaSyBPNa8q-OzZnjJIpdmyefFJ_HXSmmP3Rqo",
@@ -57,7 +60,9 @@ firebase.initializeApp({
     PostPage,
     ConnectionPage,
     SettingsPage,
-    UserProfilePage
+    UserProfilePage,
+    NewMessagePage,
+    ChatDetailPage
   ],
   imports: [
     BrowserModule,
@@ -82,13 +87,16 @@ firebase.initializeApp({
     PostPage,
     ConnectionPage,
     SettingsPage,
-    UserProfilePage
+    UserProfilePage,
+    NewMessagePage,
+    ChatDetailPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     LoadProvider,
+    ChatProvider,
     Camera,
     File,
     Crop,
@@ -98,7 +106,9 @@ firebase.initializeApp({
     SocialSharing,
     Toast,
     AdMobFree,
-    InAppPurchase
+    InAppPurchase,
+    ScreenOrientation,
+    AppVersion
   ]
 })
 export class AppModule {}

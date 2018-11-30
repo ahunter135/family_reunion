@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ModalController, ViewController } from 'ionic-angular';
 import { LoadProvider } from '../../providers/load/load';
 import { PostPage } from '../profile/profile';
+import moment from 'moment';
 
 /**
  * Generated class for the ProfilepagePage page.
@@ -38,7 +39,10 @@ export class UserProfilePage {
     this.userProfile = await this.load.getUser(post);
     let data = await this.load.getUserPostsAndConnections(this.userProfile);
     this.numConnections = data.connections;
-    this.user_posts = data.posts;
+    this.user_posts = await data.posts.sort(function (a, b) {
+      return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
+    })
+    
     this.numPosts = data.posts.length;
   }
 

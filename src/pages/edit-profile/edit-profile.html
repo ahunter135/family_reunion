@@ -24,7 +24,7 @@
   <!-- Form -->
   <ion-item>
     <ion-icon name="ios-clipboard-outline" item-start></ion-icon>
-    <ion-input type="text" *ngIf="load.user.displayName !== undefined && load.user.displayName !== null; else showNoName" [(ngModel)]="displayName" [value]="load.user.displayName"></ion-input>
+    <ion-input type="text" *ngIf="load.user.displayName !== undefined && load.user.displayName !== null; else showNoName" [(ngModel)]="displayName" [value]="load.user.displayName" autocomplete="on" autocorrect="on"></ion-input>
     <ng-template #showNoName>
         <ion-input type="text" [(ngModel)]="displayName" placeholder="Enter Name Here"></ion-input>
     </ng-template>
@@ -32,7 +32,7 @@
 
   <ion-item>
     <ion-icon name="ios-quote-outline" color="gray" item-start></ion-icon>
-    <ion-textarea placeholder="" *ngIf="load.user_data.info !== undefined; else showNoInfo" [(ngModel)]="load.user_data.info" [value]="load.user_data.info"></ion-textarea>
+    <ion-textarea placeholder="" *ngIf="load.user_data.info !== undefined; else showNoInfo" [(ngModel)]="load.user_data.info" [value]="load.user_data.info" autocomplete="on" autocorrect="on"></ion-textarea>
     <ng-template #showNoInfo>
         <ion-textarea type="text" placeholder="Enter Info Here" [(ngModel)]="load.user_data.info" [value]="load.user_data.info"></ion-textarea>
     </ng-template>

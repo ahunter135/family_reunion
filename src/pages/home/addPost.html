@@ -2,37 +2,46 @@
     <div class="modal">
 
         <ion-row>
-        <ion-col col-2>
-            <img [src]="post.profile_img" class="avatar-modal" alt=""> 
-        </ion-col>
+            <ion-col col-2>
+                <img [src]="post.profile_img" class="avatar-modal" alt=""> 
+            </ion-col>
 
-        <ion-col col-8>
-            <p (click)="profile()" class="capitalize">{{ post.displayName }}</p>
-        </ion-col>
+            <ion-col col-8>
+                <p (click)="profile()" class="capitalize">{{ post.displayName }}</p>
+            </ion-col>
 
-        <!-- If you wish, you can add close icon too. Just delete comment code -->
-        <ion-col col-2><span style="float: right; font-size: 17px;" (click)="viewCtrl.dismiss()"><ion-icon name="ios-close-circle-outline"></ion-icon></span></ion-col>
-
+            <!-- If you wish, you can add close icon too. Just delete comment code -->
+            <ion-col col-2>
+                <span style="float: right; font-size: 18px;" (click)="viewCtrl.dismiss()">
+                    <ion-icon name="ios-close-circle-outline"></ion-icon>
+                </span>
+            </ion-col>
         </ion-row>
 
         <!-- Post image -->
         <div *ngIf="!loading; else showLoading">
-            <ion-slides pager>
-                <ion-slide *ngFor="let img of pendingPosts">
-                    <img src="data:image/png;base64,{{img}}" alt="" class="post_img">
+            <ion-slides pager="pendingPost.length > 1">
+                <ion-slide *ngFor="let img of pendingPosts" class="post_img">
+                    <img src="data:image/png;base64,{{img}}" alt="" >
                 </ion-slide>
             </ion-slides>
         </div>
-        <ng-template #showLoading>
-            <img src="./assets/imgs/loading.png" class="post_img">
-        </ng-template>
 
+        <ng-template #showLoading class="post_img">
+            <img src="./assets/imgs/loading.png">
+        </ng-template>
+            <div class="anotherPhotoButton">
+                <button ion-button round small (click)="addAnother()" color="dark">
+                    Add Photo
+                </button>
+            </div>
         <ion-row text-center>
             <ion-item>
                 <ion-icon name="ios-clipboard-outline" item-start></ion-icon>
-                <ion-textarea type="text" [(ngModel)]="post.description" placeholder="Enter Description Here"></ion-textarea>
+                <ion-textarea type="text" [(ngModel)]="post.description" placeholder="Enter Description Here" autocomplete="on" autocorrect="on"></ion-textarea>
             </ion-item>
         </ion-row>
+        <hr>
         <ion-row text-center>
             <button ion-button block round (click)="submit()" color="dark">
                 Post

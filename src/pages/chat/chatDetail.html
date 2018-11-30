@@ -1,0 +1,36 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title class="capitalize">{{chatpartner.displayName}}</ion-title>
+        <ion-buttons>
+            <button ion-button icon-only (click)="dismiss()">
+                <ion-icon color="white" name="arrow-back"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content #content padding id="chatPage">
+    <ion-list>
+        <ion-item no-lines text-wrap *ngFor="let chat of chats | sort:'time'">
+            <ion-avatar item-end *ngIf="!isChatPartner(chat.sender.uid)">
+                <img src="{{chatuser.photoURL}}">
+            </ion-avatar>
+            <p class="chatbox" *ngIf="!isChatPartner(chat.sender.uid)">{{chat.message}}</p>
+            <ion-avatar item-start *ngIf="isChatPartner(chat.sender.uid)">
+                <img src="{{chatpartner.photoURL}}">
+            </ion-avatar>
+            <p class="chatbox chatbox-right" *ngIf="isChatPartner(chat.sender.uid)">{{chat.message}}</p> 
+        </ion-item>
+        </ion-list>
+</ion-content>
+<ion-footer class="message-footer">
+    <ion-toolbar class="message-toolbar" color="light">
+    <ion-item>
+        <ion-textarea [(ngModel)]="message" class="message-input" placeholder="Enter Message" text-start autocomplete="on" autocorrect="on" (keydown)="checkKeyboard()"></ion-textarea>
+    </ion-item>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="addChat()">
+            <ion-icon name="ios-send"></ion-icon>
+        </button>
+    </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

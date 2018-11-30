@@ -13,6 +13,7 @@ import { Storage } from '@ionic/storage';
 import { UserProfilePage } from '../userProfile/userProfile';
 import { Slides } from 'ionic-angular';
 import { ViewChild } from '@angular/core';
+import { SettingsPage } from '../profile/profile';
 
 @Component({
   selector: 'page-home',
@@ -60,6 +61,11 @@ export class HomePage {
     searchModal.onDidDismiss(data => {
       
     });
+  }
+
+  showSettings = () => {
+    let settingsModal = this.modalCtrl.create(SettingsPage);
+    settingsModal.present();
   }
 
   submitPost = () => {
@@ -137,64 +143,49 @@ export class AddPostPage {
    public load: LoadProvider,
    public file: File,
    public camera: Camera,
-   public viewCtrl: ViewController,
-   private admob: AdMobFree
+   public viewCtrl: ViewController
   ) {}
 
  ionViewDidLoad = async () => {
-  this.loading = true;
+    this.loading = true;
+    this.showActionSheet();
+ }
+
+ showActionSheet = () => {
+  let options = {
+    targetHeight: 1080,
+    targetWidth: 1080,
+    quality: 100,
+    destinationType: this.camera.DestinationType.FILE_URI,
+    encodingType: this.camera.EncodingType.JPEG,
+    sourceType: null,
+    allowEdit: true,
+    correctOrientation: true,
+    cameraDirection: 1,
+    saveToPhotoAlbum: false
+  };
   const actionSheet = this.actionSheetCtrl.create({
     title: 'Image Source',
     buttons: [
       {
         text: 'Photo Library',
         handler: async () => {
-          let permission = await this.imagePicker.hasReadPermission();
-          if (permission) {
-            let options = {
-              maximumImagesCount: 5,
-              width: 1080,
-              height: 1080,
-              quality: 100
-            };
-            this.imagePicker.getPictures(options).then(async (results) => {
-              if (results.length > 0) {
-              this.numImages = results.length;
-              for (let i = 0; i < results.length; i++) {
-                let newImage = await this.crop.crop(results[i], {
-                  quality: 100,
-                  targetHeight: 1080,
-                  targetWidth: 1080
-                });
-                let newImageURL = await this.encodeImageUri(newImage);
-                this.pendingPosts.push(newImageURL);
-              }
-              this.loading = false;
-              } else this.viewCtrl.dismiss();
-            }, (err) => {
-              this.viewCtrl.dismiss();
-            });
-          } else {
-            this.imagePicker.requestReadPermission();
-            this.viewCtrl.dismiss();
-          }
+          options.sourceType = this.camera.PictureSourceType.SAVEDPHOTOALBUM;
+          let imageData = await this.showCameraPhotoLibrary(options);
+          let newImage = await this.crop.crop(imageData , {
+            quality: 100,
+            targetHeight: 1080,
+            targetWidth: 1080
+          });
+          let newImageURL = await this.encodeImageUri(newImage);
+          this.pendingPosts.push(newImageURL);
+          this.loading = false;
         }
       },
       {
         text: 'Camera',
         handler: () => {
-          let options = {
-            targetHeight: 1080,
-            targetWidth: 1080,
-            quality: 100,
-            destinationType: this.camera.DestinationType.FILE_URI,
-            encodingType: this.camera.EncodingType.JPEG,
-            sourceType: this.camera.PictureSourceType.CAMERA,
-            allowEdit: true,
-            correctOrientation: true,
-            cameraDirection: 1,
-            saveToPhotoAlbum: true
-          };
+          options.sourceType = this.camera.PictureSourceType.CAMERA;
           this.showCamera(options);
         }
       }
@@ -203,16 +194,26 @@ export class AddPostPage {
   actionSheet.present();
  }
 
- showCamera(options) {
+ showCamera = async (options) => {
   this.camera.getPicture(options).then(async (imageData) => {
-    this.numImages = 1;
     let newImageURL = await this.encodeImageUri(imageData);
     this.pendingPosts.push(newImageURL);
-   
+
     this.loading = false;
   }).catch((err) => {
     this.viewCtrl.dismiss();
   })
+}
+
+showCameraPhotoLibrary = async (options) => {
+  let imageData = await this.camera.getPicture(options).catch((err) => {
+    this.viewCtrl.dismiss();
+  });
+  return imageData;
+}
+
+addAnother = async () => {
+  this.showActionSheet();
 }
 
  async encodeImageUri(filePath) {
@@ -227,7 +228,6 @@ export class AddPostPage {
  };
 
  submit = async () => {
-   //SHOW LOADING
    this.viewCtrl.dismiss({pendingPosts: this.pendingPosts, post: this.post, numImages: this.numImages});
   }
  }

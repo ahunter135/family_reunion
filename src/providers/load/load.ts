@@ -29,6 +29,7 @@ export class LoadProvider {
   selectedPage = 1;
   products;
   role;
+  user_chats = [];
 
   constructor(
     private storage: Storage,
@@ -91,13 +92,44 @@ export class LoadProvider {
   loadPosts = async () => {
     let self = this;
     console.log(this.user);
-    this.db.collection('user-profiles').doc(this.user.uid).collection('posts').onSnapshot(function(doc) {
+    this.db.collection('user-profiles').doc(this.user.uid).collection('posts').onSnapshot(async function(doc) {
       self.user_posts = [];
-      doc.forEach(element => {
+      await doc.forEach(element => {
         self.user_posts.push(element.data());
       });
+      self.user_posts = await self.user_posts.sort(function (a, b) {
+        return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
+      })
       self.numPosts = doc.size;
     });
+  }
+
+  loadChats = async () => {
+    let sentChats = [];
+    let receivedChats = [];
+
+    let sentRef = await this.db.collection('chats').where('sender.uid', '==', this.user.uid).get();
+    for (let sentDoc of sentRef.docs) {
+        sentChats.push(sentDoc.data());
+    }
+    let receivedRef= await this.db.collection('chats').where('receiver.uid', '==', this.user.uid).get();
+    for (let receivedDoc of receivedRef.docs) {
+      receivedChats.push(receivedDoc.data());
+    }
+
+    let allArray = [...sentChats, ...receivedChats];
+    let unique_array = [];
+    for(let i = 0;i < allArray.length; i++){
+        if(unique_array.indexOf(allArray[i]) == -1){
+            unique_array.push(allArray[i])
+        }
+    }
+
+    unique_array.sort(function (a, b) {
+      return moment.utc(b.time).diff(moment.utc(a.time));
+    });
+
+    this.user_chats = unique_array;
   }
 
   configureConnectionsPosts = async () => {
@@ -112,7 +144,9 @@ export class LoadProvider {
           data.uid = connection.uid;
           this.connection_posts.push(data);
         });
-        this.connection_posts = this.connection_posts.reverse();
+        this.connection_posts = await this.connection_posts.sort(function (a, b) {
+          return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
+        })
         this.storage.set('home-posts', this.connection_posts);
         this.events.publish('posts:loaded');
       })
@@ -241,6 +275,7 @@ export class LoadProvider {
           this.loadHome();
           this.loadUser();
           this.loadPosts();
+          this.loadChats();
         } else {
           let loginModal = this.modalCtrl.create(LoginPage);
           loginModal.present();
@@ -248,6 +283,7 @@ export class LoadProvider {
             this.loadHome();
             this.loadUser();
             this.loadPosts();
+            this.loadChats();
           })
         }
       })
@@ -258,6 +294,7 @@ export class LoadProvider {
         this.loadHome();
         this.loadUser();
         this.loadPosts();
+        this.loadChats();
       })
     }
   }

@@ -1,6 +1,28 @@
 <ion-content>
     <ion-card>
+        <ion-card-header>About</ion-card-header>
         <ion-card-content>
+            <p><strong>Version: </strong>{{appVersionNumber}}</p>
+            <hr>
+            <br/>
+            <p><strong>About: </strong>
+                This app is meant to make sharing moments with your family simple, easy, and private.
+                <br/>
+                <br/>
+                All you have to do is collect family codes from your family and friends, search each one and add that person
+                as a Peep! Then start sharing photos!
+                <br/>
+                <br/>
+                There is a small ad that pops up when posting, if that annoys you or you want to support the app, feel free to
+                buy the remove ads addon below, we really appreciate it!
+                <br/>
+                Also, we are constantly improving the app, feel free to give us feedback to let us know your concerns or thoughts.
+                You can do this in the store by giving a rating and feedback.
+                <br/>
+                Thank You!
+            </p>
+            <hr>
+            <br/>
             <div class="ads-button">
                 <button ion-button round color="dark" (click)="removeAds()">Remove Ads</button>
                 <button ion-button round color="dark" (click)="restore()">Restore Purchase</button>
