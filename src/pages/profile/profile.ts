@@ -8,6 +8,7 @@ import firebase from 'firebase';
 import { Storage } from '@ionic/storage';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { AppVersion } from '@ionic-native/app-version';
+import { UserProfilePage } from '../userProfile/userProfile';
 
 @Component({
   selector: 'page-profile',
@@ -163,8 +164,17 @@ export class ConnectionPage {
   constructor(
     public viewCtrl: ViewController,
     public navParams: NavParams,
-    public load: LoadProvider
+    public load: LoadProvider,
+    public modalCtrl: ModalController
    ) {
+   }
+
+   showConnection = (user) => {
+    let profileModal = this.modalCtrl.create(UserProfilePage, {post: user});
+    profileModal.present();
+    profileModal.onDidDismiss(data => {
+
+    })
    }
 
    removeConnection = async (user) => {
@@ -216,14 +226,20 @@ export class SettingsPage {
 
    restore = () => {
      this.iap.restorePurchases().then(response => {
-      this.load.user_data.role = 0;
-       this.load.updateUserRole();
-       let toast = this.toast.create({
-        message: 'Ads Removed, Thank You!',
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
+       if (response[0]) {
+         let receipt = JSON.parse(response[0].receipt);
+         if (receipt.purchaseState === 0) {
+          this.load.user_data.role = 0;
+          this.load.updateUserRole();
+          let toast = this.toast.create({
+           message: 'Ads Removed, Thank You!',
+           duration: 2000,
+           position: 'bottom'
+          });
+          toast.present();
+         }
+       }
+       
      }).catch(error => console.log(error));
    }
 

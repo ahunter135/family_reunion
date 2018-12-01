@@ -30,7 +30,7 @@ export class ChatPage {
     
     for (let i = 0; i < this.load.user_chats.length; i++) {
       if (this.userChats.indexOf(this.load.user_chats[i].pair) === -1) {
-        this.load.user_chats[i].time = moment(this.load.user_chats[i].time).format("MMM Do YY, h:mm a");
+        if (moment(this.load.user_chats[i].time).isValid()) this.load.user_chats[i].time = moment(this.load.user_chats[i].time).format("MMM Do YY, h:mm a");
         this.chats.push(this.load.user_chats[i]);
         this.userChats.push(this.load.user_chats[i].pair);
       }
