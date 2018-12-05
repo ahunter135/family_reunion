@@ -23,6 +23,11 @@ export class HomePage {
   @ViewChild(Slides) slides: Slides;
   disableSearch;
   loading = true;
+
+  activeGroup = {
+    posts: []
+  }
+
   constructor(
     public navCtrl: NavController,
     public load: LoadProvider,
@@ -30,29 +35,39 @@ export class HomePage {
     public modalCtrl: ModalController,
     public loader: LoadingController,
     private admob: AdMobFree,
-    private storage: Storage,
     public alertCtrl: AlertController
   ) {}
 
-  ionViewDidLoad = async () => {
+  ionViewWillLoad = async () => {
     let loader = this.loader.create({
       spinner: 'ios',
       content: 'Loading Content',
       showBackdrop: false,
-      duration: 100
+      duration: 2000
     });
     loader.present();
-    if (this.load.connection_posts.length === 0) {
-      this.load.connection_posts = await this.storage.get('home-posts');
-      if (this.load.connection_posts === null) this.load.connection_posts = [];
-    }
     this.events.subscribe('user:loaded', user => {
       if (user.displayName !== undefined) this.disableSearch = false;
       else this.disableSearch = true;
-    })
-    this.events.subscribe('posts:loaded', posts => {
-      //this.storage.set('home-posts', this.load.connection_posts);
-    })
+    });
+  }
+
+  swipePage = (event) => {
+    console.log("HI");
+    if(event.direction === 1) { // Swipe Left
+      this.navCtrl.parent.select(2);
+    } 
+
+    if(event.direction === 2) { // Swipe Right
+      this.navCtrl.parent.select(0);
+    }
+  }
+
+  setActive = (group) => {
+    this.activeGroup = group;
+    this.activeGroup.posts.sort(function (a, b) {
+      return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
+    });
   }
 
   showSearch = () => {
@@ -90,7 +105,7 @@ export class HomePage {
             this.loading = false;
             post.post_imgs.push(data);
           }
-          
+          console.log(post);
           this.load.uploadPost(post);
           if (this.load.role === 1) {
             this.admob.interstitial.config({
@@ -106,15 +121,23 @@ export class HomePage {
   }
 
   showProfile = (post) => {
-    let profileModal = this.modalCtrl.create(UserProfilePage, {post: post});
-    profileModal.present();
-    profileModal.onDidDismiss(data => {
-
-    })
+    if (this.load.user.uid !== post.uid) {
+      let profileModal = this.modalCtrl.create(UserProfilePage, {post: post});
+      profileModal.present();
+      profileModal.onDidDismiss(data => {
+  
+      })
+    }
   }
 
   doRefresh = async (ev) => {
-    await this.load.configureConnectionsPosts();
+    if (this.activeGroup.posts.length !== 0) {
+      this.activeGroup = await this.load.getGroupData(this.activeGroup);
+      this.activeGroup.posts.sort(function (a, b) {
+        return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
+      });
+    }
+    this.load.getHome();
     ev.complete();
   }
 }
@@ -126,12 +149,14 @@ export class HomePage {
 export class AddPostPage {
  post = {
    uuid: UUID.UUID(),
+   uid: this.load.user.uid,
    profile_img: this.load.user.photoURL,
    displayName: this.load.user.displayName,
    post_imgs: [],
    description: null,
    postedAt: moment().format("MMM Do YY, h:mm a"),
-   timestamp: moment().format()
+   timestamp: moment().format(),
+   group: null
  }
  loading = true;
  numImages;
@@ -228,6 +253,10 @@ addAnother = async () => {
  };
 
  submit = async () => {
+   if (this.post.group === null) {
+     alert("Please select a group to post to!");
+     return;
+   }
    this.viewCtrl.dismiss({pendingPosts: this.pendingPosts, post: this.post, numImages: this.numImages});
   }
  }

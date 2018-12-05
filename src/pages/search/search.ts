@@ -30,26 +30,39 @@ export class SearchPage {
 
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
-      let profiles = await this.load.db.collection('user-profiles').doc(val).get();
-      let response = await this.load.isConnected(this.load.user.uid);
-      response.forEach(value => {
-        if (value.data().uid === profiles.data().data.uid) {
-          this.connectionKey = value.id;
-          this.connected = true;
-          return;
+      let profiles = await this.load.db.collection('groups').where("group_code", "==", val.toLowerCase()).get();
+      profiles.forEach(doc => {
+        let group = {
+          key: doc.id,
+          data: doc.data()
+        };
+        for (let i = 0; i < group.data.members.length; i++) {
+          if (this.load.user.uid === group.data.members[i].uid) {
+            this.connected = true;
+            break;
+          } else {
+            this.connected = false;
+          }
         }
+        this.search_data.push(group);
       })
-      if (profiles.data().data.uid !== this.load.user.uid) this.search_data.push(profiles.data().data);
     }
   }
 
-  addAsConnection = async (user) => {
-    this.load.addUserAsConnection(user);
+  joinGroup = async (group) => {
+    group.data.members.push(this.load.user_data);
+    this.load.joinGroup(group);
     this.viewCtrl.dismiss();
   }
 
-  removeConnection = async (user) => {
-    this.load.removeConnection(this.connectionKey, user);
+  leaveGroup = (group) => {
+    for (let i = 0; i < group.data.members.length; i++) {
+      if (this.load.user.uid === group.data.members[i].uid) {
+        group.data.members.splice(i, 1);
+        break;
+      } 
+    }
+    this.load.leaveGroup(group);
     this.viewCtrl.dismiss();
   }
 }

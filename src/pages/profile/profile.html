@@ -12,9 +12,9 @@
         <h6>{{load.numPosts}}</h6>
         <p no-padding no-margin>Posts</p>
       </ion-col>
-      <ion-col col-3 text-center (click)="showConnections()">
-        <h6>{{load.numConnections}}</h6>
-        <p no-paddin no-margin>Peeps</p>
+      <ion-col col-3 text-center (click)="showGroups();">
+        <h6>{{load.user_groups.length}}</h6>
+        <p no-paddin no-margin>Peep Groups</p>
       </ion-col>
     </ion-row>
 
@@ -55,7 +55,7 @@
         <ion-grid>
           <ion-row >
             <ion-col col-4 *ngFor="let i of load.user_posts | sortPosts" (click)="showPostModal(i)" >
-              <img [src]="i.post_imgs[0]" alt="" (press)="onHold(i)" class="grid_img">
+              <img [src]="i.data.post_imgs[0]" alt="" (press)="onHold(i)" class="grid_img">
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -66,20 +66,20 @@
 
               <ion-item>
                 <ion-avatar item-left>
-                  <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
+                  <img src="{{post.data.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg'" class="avatar-image" />
                 </ion-avatar>
-                <h2 style="font-weight: bold" class="capitalize">{{post.displayName}}</h2>
-                <p>{{post.postedAt}}</p>
+                <h2 style="font-weight: bold" class="capitalize">{{post.data.displayName}}</h2>
+                <p>{{post.data.postedAt}}</p>
               </ion-item>
         
               <ion-slides pager>
-                  <ion-slide *ngFor="let img of post.post_imgs" class="post_img">
+                  <ion-slide *ngFor="let img of post.data.post_imgs" class="post_img">
                       <img src="{{img}}" alt="" >
                   </ion-slide>
               </ion-slides>
         
               <ion-card-content>
-                <p class="capitalize"><strong>{{post.displayName}}</strong> {{post.description}}</p>
+                <p class="capitalize"><strong>{{post.data.displayName}}</strong> {{post.data.description}}</p>
               </ion-card-content>
           </ion-card>
       </ion-list>

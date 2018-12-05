@@ -1,0 +1,29 @@
+page-group {
+    .main-modal {
+        background-color: rgba(0, 0, 0, 0.4); /* for shadow */
+    }
+    
+    .modal {
+        position: absolute;
+        width: 95%;
+        top: 3%;
+        left: 3%;
+        background: #fff;
+        border-radius: 10px;
+        -webkit-box-shadow: 0 10px 6px -6px #777;
+        -moz-box-shadow: 0 10px 6px -6px #777;
+        box-shadow: 0 10px 6px -6px #777;
+    }
+    .edit-avatar {
+        border-radius: 100%;
+        width: 25%;
+    }
+
+    .info-text {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .custom-hr {
+        height: 3px;
+    }
+}

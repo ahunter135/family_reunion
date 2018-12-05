@@ -21,7 +21,7 @@ export class LoadProvider {
     role: 1
   };
   user_connections = [];
-  connection_posts = [];
+  group_posts = [];
   numConnections = 0;
   numPosts = 0;
   user_posts = [];
@@ -30,6 +30,9 @@ export class LoadProvider {
   products;
   role;
   user_chats = [];
+  user_groups = [];
+  activeGroup = null;
+  numGroups;
 
   constructor(
     private storage: Storage,
@@ -50,7 +53,7 @@ export class LoadProvider {
     };
     this.user_connections = [];
     this.user_posts = [];
-    this.connection_posts = [];
+    this.group_posts = [];
   }
 
   getUser = async (user) => {
@@ -77,28 +80,39 @@ export class LoadProvider {
 
   loadHome = async () => {
     let self = this;
-    this.db.collection('user-profiles').doc(this.user.uid).collection('connections').onSnapshot(async function(doc) {
-      self.user_connections = [];
+    this.db.collection('user-profiles').doc(this.user.uid).collection('groups').onSnapshot(async function(doc) {
+      self.user_groups = [];
+      self.numGroups = doc.size;
       await doc.forEach(element => {
-        let user = element.data();
-        user.key = element.id;
-        self.user_connections.push(user);
+        self.user_groups.push(element.data());
       })
-      self.numConnections = doc.size;
-      self.configureConnectionsPosts();
+      self.configureGroupPosts();
     })
+  };
+
+  getHome = async () => {
+    let groups = await this.db.collection('user-profiles').doc(this.user.uid).collection('groups').get();
+    this.user_groups = [];
+    this.numGroups = groups.size;
+    await groups.forEach(element => {
+      this.user_groups.push(element.data());
+    })
+    this.configureGroupPosts();
   }
 
   loadPosts = async () => {
     let self = this;
-    console.log(this.user);
     this.db.collection('user-profiles').doc(this.user.uid).collection('posts').onSnapshot(async function(doc) {
       self.user_posts = [];
       await doc.forEach(element => {
-        self.user_posts.push(element.data());
+        let post = {
+          data: element.data(),
+          user_post_id: element.id
+        }
+        self.user_posts.push(post);
       });
       self.user_posts = await self.user_posts.sort(function (a, b) {
-        return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
+        return moment.utc(b.data.timestamp).diff(moment.utc(a.data.timestamp));
       })
       self.numPosts = doc.size;
     });
@@ -132,28 +146,25 @@ export class LoadProvider {
     this.user_chats = unique_array;
   }
 
-  configureConnectionsPosts = async () => {
-    this.connection_posts = [];
-
-    if (this.user_connections.length > 0) {
-
-      await this.user_connections.forEach(async connection => {
-        let posts = await this.db.collection('user-profiles').doc(connection.uid).collection('posts').get();
-        await posts.forEach(post => {
-          let data = post.data();
-          data.uid = connection.uid;
-          this.connection_posts.push(data);
-        });
-        this.connection_posts = await this.connection_posts.sort(function (a, b) {
-          return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
-        })
-        this.storage.set('home-posts', this.connection_posts);
-        this.events.publish('posts:loaded');
-      })
-
-    } else {
-      this.events.publish('posts:loaded');
-    }
+  configureGroupPosts = async () => {
+   let groups = this.user_groups;
+   this.user_groups = [];
+   groups.forEach(async group => {
+     let foundGroup = await this.db.collection('groups').where("group_code", "==", group.group_code).get();
+     foundGroup.forEach(async data => {
+       let posts = await this.db.collection('groups').doc(data.id).collection('posts').get();
+       let group_posts = [];
+       posts.forEach(doc => {
+         group_posts.push(doc.data());
+       });
+       let new_group = {
+        data: data.data(),
+        posts: group_posts,
+        key: data.id
+       }
+       this.user_groups.push(new_group);
+     });
+   });
   }
 
   loadUser = async () => {
@@ -191,6 +202,11 @@ export class LoadProvider {
       data: self.user_data
     });
   }
+
+  createGroup = async (data) => {
+    this.db.collection('groups').add(data);
+  } 
+
   async uploadImage(file) {
     let today = moment().format('YYYYMMDD');
     let storageRef = firebase.storage().ref();
@@ -209,8 +225,21 @@ export class LoadProvider {
     return url;
   }
 
-  async uploadPost(post) {
+  uploadPost = async (post) => {
     this.db.collection('user-profiles').doc(this.user.uid).collection('posts').add(post);
+    let foundGroup = await this.db.collection('groups').where("group_code", "==", post.group).get();
+    foundGroup.forEach(group => {
+      this.db.collection('groups').doc(group.id).collection('posts').add(post);
+      return;
+    })
+  }
+
+  updateGroupData = (group) => {
+    this.db.collection('groups').doc(group.key).update({
+      group_code: group.data.group_code,
+      group_name: group.data.group_name,
+      photoURL: group.data.photoURL
+    })
   }
 
   updateUserProfileInfo = async (displayName, photoURL) => {
@@ -226,26 +255,25 @@ export class LoadProvider {
     })
   }
 
-  addUserAsConnection = async (user) => {
-    let currentUser = {
-      displayName: this.user.displayName,
-      info: this.user_data.info,
-      photoURL: this.user.photoURL,
-      token: this.token,
-      uid: this.user.uid
-    }
-    this.db.collection('user-profiles').doc(this.user.uid).collection('connections').add(user);
-    this.db.collection('user-profiles').doc(user.uid).collection('connections').add(currentUser);
+  joinGroup = (group) => {
+    console.log(group);
+    this.db.collection('groups').doc(group.key).update({
+      members: group.data.members
+    });
+    this.db.collection('user-profiles').doc(this.user.uid).collection('groups').add({group_code: group.data.group_code});
   }
 
-  removeConnection = async (key, user) => {
-    this.db.collection('user-profiles').doc(this.user.uid).collection('connections').doc(key).delete();
-
-    let response = await this.isConnected(user.uid);
-    await response.forEach(doc => {
-      key = doc.id;
+  leaveGroup = async (group) => {
+    this.db.collection('groups').doc(group.key).update({
+      members: group.data.members
     });
-    this.db.collection('user-profiles').doc(user.uid).collection('connections').doc(key).delete();
+    let groups = await this.db.collection('user-profiles').doc(this.user.uid).collection('groups').get();
+    groups.forEach(doc => {
+      if (doc.data().group_code === group.data.group_code) {
+        this.db.collection('user-profiles').doc(this.user.uid).collection('groups').doc(doc.id).delete();
+        return;
+      }
+    })
   }
 
   isConnected = async (uid) => {
@@ -253,15 +281,31 @@ export class LoadProvider {
     return connection
   }
 
-  getKey = async (uid) => {
+  getGroupData = async (group) => {
+    let groups = await this.db.collection('groups').doc(group.key).get();
+    let posts = await this.db.collection('groups').doc(group.key).collection('posts').get();
+    let group_posts = [];
+    await posts.forEach(doc => {
+      group_posts.push(doc.data());
+    });
+    let new_group = {
+      data: groups.data(),
+      posts: group_posts,
+      key: groups.id
+    }
     
+    return new_group;
   }
 
   removePost = async (post) => {
-    let foundPost = await this.db.collection('user-profiles').doc(this.user.uid).collection('posts').where("uuid", "==", post.uuid).get();
-    foundPost.forEach(doc => {
-      this.db.collection('user-profiles').doc(this.user.uid).collection('posts').doc(doc.id).delete();
-      return;
+    this.db.collection('user-profiles').doc(this.user.uid).collection('posts').doc(post.user_post_id).delete();
+    let foundGroup = await this.db.collection('groups').where("group_code", "==", post.data.group).get();
+    foundGroup.forEach(async doc => {
+      let groupRef = await this.db.collection('groups').doc(doc.id).collection('posts').where("uuid", "==", post.data.uuid).get();
+      groupRef.forEach(ref => {
+        this.db.collection('groups').doc(doc.id).collection('posts').doc(ref.id).delete();
+        return;
+      });
     });
   }
   

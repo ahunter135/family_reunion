@@ -1,0 +1,31 @@
+<ion-content class="main-modal">
+    <div class="modal">
+      <ion-row>
+          <ion-col col-2><span style="font-size: 17px" (click)="viewCtrl.dismiss()"><ion-icon name="ios-close-circle-outline"></ion-icon></span></ion-col>
+      </ion-row>
+      <ion-row>
+          <ion-col>
+            <ion-list inset>
+    
+              <ion-item>
+                <ion-label floating>Enter in the Group Name</ion-label>
+                <ion-input type="text" [(ngModel)]="data.group_name" required  autocapitalize="none"></ion-input>
+              </ion-item>
+    
+              <ion-item>
+                <ion-label floating>Group Code</ion-label>
+                <ion-input type="text" [(ngModel)]="data.group_code" (keyup)="searchGroupName($event)" required autocapitalize="none"></ion-input>
+              </ion-item>
+    
+            </ion-list>
+          </ion-col>
+        </ion-row>
+        <hr>
+        <br />
+        <ion-row>
+          <ion-col class="submit-button">
+            <button ion-button round color="dark" class="submit-button" (click)="submit()">Create</button>
+          </ion-col>
+        </ion-row>
+    </div>     
+</ion-content>

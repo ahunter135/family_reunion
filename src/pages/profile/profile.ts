@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController, PopoverController, ViewController, ToastController, NavParams, ActionSheetController } from 'ionic-angular';
+import { NavController, ModalController, PopoverController, ViewController, ToastController, NavParams, ActionSheetController, AlertController } from 'ionic-angular';
 import { LoadProvider, LoginPage } from '../../providers/load/load';
 import { EditProfile } from '../edit-profile/edit-profile';
 import { Clipboard } from '@ionic-native/clipboard';
@@ -9,6 +9,8 @@ import { Storage } from '@ionic/storage';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { AppVersion } from '@ionic-native/app-version';
 import { UserProfilePage } from '../userProfile/userProfile';
+import { ManageGroupPage } from '../manageGroups/manageGroups';
+import { AdMobFree } from '@ionic-native/admob-free';
 
 @Component({
   selector: 'page-profile',
@@ -54,7 +56,7 @@ export class ProfilePage {
     postModal.present();
   }
 
-  showConnections = () => {
+  showGroups = () => {
     let connectionModal = this.modalCtrl.create(ConnectionPage);
     connectionModal.present();
   }
@@ -86,9 +88,9 @@ export class ProfilePage {
   template: `
     <ion-list>
       <ion-list-header>Options</ion-list-header>
-      <button ion-item (click)="copyCode()">Copy Family Code</button>
-      <button ion-item (click)="shareCode()">Share Family Code</button>
-      <button ion-item (click)="logout()">Logout</button>
+      <button ion-item (click)="createCode()">Create A Group</button>
+      <button ion-item (click)="manageGroups()">Manage Groups</button>
+      <button ion-item (click)="shareCode()">Share A Group Code</button>
     </ion-list>
   `
 })
@@ -100,7 +102,8 @@ export class PopoverPage {
     private socialSharing: SocialSharing,
     private toast: ToastController,
     private storage: Storage,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    public alertCtrl: AlertController
   ) {}
 
   close() {
@@ -119,6 +122,16 @@ export class PopoverPage {
     this.close();
   }
 
+  createCode = () => {
+    let createGroupModal = this.modalCtrl.create(CreateGroupPage);
+    createGroupModal.present();
+  }
+
+  manageGroups = () => {
+    let manageGroupsModal = this.modalCtrl.create(ManageGroupPage);
+    manageGroupsModal.present();
+  }
+
   logout = () => {
     let self = this;
     firebase.auth().signOut().then(function() {
@@ -131,13 +144,30 @@ export class PopoverPage {
   }
 
   shareCode = () => {
-    let options = {};
-    options = {
-      message: "Check out the Family Reunion App! Don't forget to add me using my Family Code: " + this.load.user.uid + "!\n",
-      url: 'https://austinshunter.wixsite.com/mypeepsapp'
+    let radioAlert = this.alertCtrl.create();
+    radioAlert.setTitle('Pick Group');
+    for (let i = 0; i < this.load.user_groups.length; i++) {
+      radioAlert.addInput({
+        type: 'radio',
+        label: this.load.user_groups[i].data.group_name,
+        value: this.load.user_groups[i].data.group_code,
+        checked: false
+      });
     }
-    this.socialSharing.shareWithOptions(options);
-    this.close();
+    radioAlert.addButton('Cancel');
+    radioAlert.addButton({
+      text: 'OK',
+      handler: data => {
+        let options = {};
+        options = {
+          message: "Check out the Family Reunion App! Don't forget to join my group using my Family Code: " + data + "\n",
+          url: 'https://austinshunter.wixsite.com/mypeepsapp'
+        }
+        this.socialSharing.shareWithOptions(options);
+        this.close();
+      }
+    });
+    radioAlert.present();
   }
 }
 
@@ -161,6 +191,11 @@ export class PostPage {
   templateUrl: 'connections.html'
 })
 export class ConnectionPage {
+  activeGroup = {
+    data: {
+      members: []
+    }
+  }
   constructor(
     public viewCtrl: ViewController,
     public navParams: NavParams,
@@ -170,23 +205,14 @@ export class ConnectionPage {
    }
 
    showConnection = (user) => {
-    let profileModal = this.modalCtrl.create(UserProfilePage, {post: user});
-    profileModal.present();
-    profileModal.onDidDismiss(data => {
-
-    })
+     if (user.uid !== this.load.user.uid) {
+      let userProfileModal = this.modalCtrl.create(UserProfilePage, {post: user});
+      userProfileModal.present();
+     }
    }
 
-   removeConnection = async (user) => {
-     let response = await this.load.isConnected(this.load.user.uid);
-     let key;
-     await response.forEach(doc => {
-      key = doc.id;
-      return;
-     });
-     console.log(key);
-     this.load.removeConnection(key, user);
-   }
+   changeGroup = () => {}
+
 }
 
 @Component({
@@ -242,6 +268,63 @@ export class SettingsPage {
        
      }).catch(error => console.log(error));
    }
+
+   
+}
+
+@Component({
+  selector: 'page-create-group',
+  templateUrl: 'createGroup.html'
+})
+export class CreateGroupPage {
+
+  data = {
+    group_name: '',
+    group_code: '',
+    admin: this.load.user.uid,
+    members: []
+  }
+
+  foundGroup = false;
+
+  constructor(
+    public viewCtrl: ViewController,
+    public navParams: NavParams,
+    public load: LoadProvider,
+    public admob: AdMobFree
+   ) {
+   }
+
+    ionViewWillLoad = async () => {}
+
+    submit = async () => {
+      if (!this.foundGroup) {
+        this.data.members.push(this.load.user_data);
+        this.data.group_name = this.data.group_name.toLowerCase();
+        this.load.createGroup(this.data);
+        this.load.db.collection('user-profiles').doc(this.load.user.uid).collection('groups').add({group_code: this.data.group_code});
+        if (this.load.role === 1) {
+          this.admob.interstitial.config({
+            id: 'ca-app-pub-7853858495093513/4773247160',
+            isTesting: false,
+            autoShow: true
+          });
+          await this.admob.interstitial.prepare();
+        }
+        this.viewCtrl.dismiss();
+      } else {
+        alert("Group Code Already Exists!");
+      }
+    }
+
+    searchGroupName = async (ev) => {
+      let foundGroup = await this.load.db.collection('groups').where("group_code", "==", ev.target.value).get();
+      if (!foundGroup.empty) {
+        this.foundGroup = true;
+      } else {
+        this.foundGroup = false;
+      }
+    }
 
    
 }

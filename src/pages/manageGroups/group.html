@@ -1,0 +1,66 @@
+<ion-content class="main-modal">
+    <div class="modal">
+            <ion-row>
+                    <ion-col col-2>
+                        <span style="float: left; font-size: 18px;" (click)="viewCtrl.dismiss()">
+                            <ion-icon name="ios-close-circle-outline"></ion-icon>
+                        </span>
+                    </ion-col>
+        
+                    <ion-col col-8>
+                    </ion-col>
+        
+                    <!-- If you wish, you can add close icon too. Just delete comment code -->
+                    <ion-col col-2>
+                        <span style="float: right; font-size: 18px;" (click)="save()">
+                            <ion-icon name="ios-checkmark-circle-outline"></ion-icon>
+                        </span>
+                    </ion-col>
+                </ion-row>
+        <div text-center>
+            <img [src]="group.data.photoURL" onerror="this.src='./assets/imgs/loading.png'" class="edit-avatar" alt="">
+            <p class="change-text" (click)="selectAvatar();">Change Photo</p>
+        </div>
+            
+        <!-- Form -->
+        <ion-item>
+            <ion-label item-start>Group Name</ion-label>
+            <ion-input type="text" *ngIf="group.data.admin === load.user.uid; else showName" [(ngModel)]="group.data.group_name" [value]="group.data.group_name" autocomplete="on" autocorrect="on"></ion-input>
+            <ng-template #showName>
+                <ion-input type="text" disabled [(ngModel)]="group.data.group_name" [value]="group.data.group_name" autocomplete="on" autocorrect="on"></ion-input>
+            </ng-template>
+        </ion-item>
+    
+        <ion-item>
+            <ion-label item-start>Group Code</ion-label>
+            <ion-input placeholder="" *ngIf="group.data.admin === load.user.uid; else showCode"[(ngModel)]="group.data.group_code" [value]="group.data.group_code" autocomplete="on" autocorrect="on"></ion-input>
+            <ng-template #showCode>
+                <ion-input placeholder="" disabled [(ngModel)]="group.data.group_code" [value]="group.data.group_code" autocomplete="on" autocorrect="on"></ion-input>
+            </ng-template>
+        </ion-item>
+
+        <ion-row text-center *ngIf="group.data.admin !== load.user.uid" style="padding-top: 5px;">
+            <button ion-button block round (click)="leaveGroup()" color="dark">
+                Leave Group
+            </button>
+        </ion-row>
+
+        <div margin-top padding-top>
+            <h4 no-margin no-padding class="info-text">Member List</h4>
+            <hr class="custom-hr" color="gray">
+        </div>
+
+        <ion-list>
+            <ion-item *ngFor="let i of group.data.members" (click)="showProfile(i);">
+                <ion-avatar item-start>
+                    <img src="{{i.photoURL}}" onerror="this.src='./assets/imgs/default-avatar.jpg'">
+                </ion-avatar>
+                <h2 class="capitalize">{{i.displayName}}</h2>
+                <p *ngIf="group.data.admin === i.uid; else showInfo">Admin</p>
+                <ng-template #showInfo>
+                    <p>{{i.info}}</p>
+                </ng-template>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

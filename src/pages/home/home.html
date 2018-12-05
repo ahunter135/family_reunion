@@ -20,32 +20,38 @@
       pullingText="Pull to refresh"
       refreshingSpinner="circles"></ion-refresher-content>
   </ion-refresher>
-  <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of load.connection_posts">
-
-      <ion-item (click)="showProfile(post)">
-        <ion-avatar item-left>
-          <img src="{{post.profile_img}}" style="" onerror="this.src='./assets/imgs/default-avatar.jpg';" class="avatar-image" />
-        </ion-avatar>
-        <h2 style="font-weight: bold" class="capitalize">{{post.displayName}}</h2>
-        <p>{{post.postedAt}}</p>
-      </ion-item>
-
-      <ion-slides pager>
-          <ion-slide *ngFor="let img of post.post_imgs" class="post_img">
-              <img src="{{img}}" alt="" >
-          </ion-slide>
-      </ion-slides>
-
-      <ion-card-content>
-        <p class="capitalize"><strong>{{post.displayName}}</strong> {{post.description}}</p>
-      </ion-card-content>
-
-  </ion-card>
-
-  <div *ngIf="load.connection_posts.length === 0;">
-      <p class="emptyText">Add some family members to view their posts!</p>
-      <p class="emptyText2">Just search their Family Code</p>
-  </div>
+  <ion-scroll class="story" scrollX="true">
+      <div class="story_scroll" *ngFor="let s of load.user_groups">
+        <div class="story_img_bg">
+          <img no-margin no-padding class="story_img" (click)="setActive(s)" [src]="s.data.photoURL" onerror="this.src='./assets/imgs/loading.png';" >
+        </div>
+        <p no-margin no-padding text-center class="story_text">{{ s.data.group_name }}</p>
+      </div>
+    </ion-scroll>
+    
+    <hr no-margin no-padding>
+    
+    <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of activeGroup.posts">
+  
+        <ion-item (click)="showProfile(post)">
+          <ion-avatar item-left>
+            <img src="{{post.profile_img}}" onerror="this.src='./assets/imgs/default-avatar.jpg';" class="avatar-image" />
+          </ion-avatar>
+          <h2 style="font-weight: bold" class="capitalize">{{post.displayName}}</h2>
+          <p>{{post.postedAt}}</p>
+        </ion-item>
+  
+        <ion-slides pager>
+            <ion-slide *ngFor="let img of post.post_imgs" class="post_img">
+                <img src="{{img}}" alt="" >
+            </ion-slide>
+        </ion-slides>
+  
+        <ion-card-content>
+          <p class="capitalize"><strong>{{post.displayName}}</strong> {{post.description}}</p>
+        </ion-card-content>
+  
+    </ion-card>
   <ion-fab right bottom>
     <button ion-fab color="dark" (click)="submitPost()"><ion-icon name="ios-add"></ion-icon></button>
   </ion-fab>
