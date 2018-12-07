@@ -35,6 +35,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { ChatProvider } from '../providers/chat/chat';
 import { AppVersion } from '@ionic-native/app-version';
 import { ManageGroupPage, GroupPage } from '../pages/manageGroups/manageGroups';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 firebase.initializeApp({
   apiKey: "AIzaSyBPNa8q-OzZnjJIpdmyefFJ_HXSmmP3Rqo",
@@ -115,7 +116,8 @@ firebase.initializeApp({
     AdMobFree,
     InAppPurchase,
     ScreenOrientation,
-    AppVersion
+    AppVersion,
+    BackgroundMode
   ]
 })
 export class AppModule {}

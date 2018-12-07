@@ -86,6 +86,7 @@ export class LoadProvider {
       await doc.forEach(element => {
         self.user_groups.push(element.data());
       })
+
       self.configureGroupPosts();
     })
   };

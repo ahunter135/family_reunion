@@ -22,6 +22,7 @@
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/admob-free": "^4.17.0",
     "@ionic-native/app-version": "^4.17.0",
+    "@ionic-native/background-mode": "^4.18.0",
     "@ionic-native/camera": "^4.17.0",
     "@ionic-native/clipboard": "^4.17.0",
     "@ionic-native/core": "~4.15.0",
@@ -42,6 +43,7 @@
     "cordova-clipboard": "^1.2.1",
     "cordova-plugin-admob-free": "^0.23.0",
     "cordova-plugin-app-version": "^0.1.9",
+    "cordova-plugin-background-mode": "^0.7.2",
     "cordova-plugin-camera": "^4.0.3",
     "cordova-plugin-crop": "^0.4.0",
     "cordova-plugin-device": "^2.0.2",
@@ -100,7 +102,8 @@
       },
       "cordova-plugin-inapppurchase": {},
       "cordova-plugin-screen-orientation": {},
-      "cordova-plugin-app-version": {}
+      "cordova-plugin-app-version": {},
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "android"

@@ -9,8 +9,7 @@
                 This app is meant to make sharing moments with your family simple, easy, and private.
                 <br/>
                 <br/>
-                All you have to do is collect family codes from your family and friends, search each one and add that person
-                as a Peep! Then start sharing photos!
+                All you have to do is collect group codes from your family and friends, search each one and join that group! Then start sharing photos!
                 <br/>
                 <br/>
                 There is a small ad that pops up when posting, if that annoys you or you want to support the app, feel free to
@@ -24,7 +23,7 @@
             <hr>
             <br/>
             <div class="ads-button">
-                <button ion-button round color="dark" (click)="removeAds()">Remove Ads</button>
+                <button ion-button round color="dark" *ngIf="load.user_data.role !== 0" (click)="removeAds()">Remove Ads</button>
                 <button ion-button round color="dark" (click)="restore()">Restore Purchase</button>
                 <button ion-button round small color="light" (click)="viewCtrl.dismiss()">Back</button>
             </div>

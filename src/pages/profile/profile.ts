@@ -52,6 +52,7 @@ export class ProfilePage {
   }
 
   showPostModal = (post) => {
+    console.log(post);
     let postModal = this.modalCtrl.create(PostPage, {post: post});
     postModal.present();
   }
