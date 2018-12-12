@@ -1,0 +1,27 @@
+<ion-content class="main-modal">
+    <div class="modal">
+        <ion-row>   
+            <ion-col col-2>
+                <span class="close-icon" (click)="viewCtrl.dismiss()">
+                    <ion-icon name="ios-close-circle-outline"></ion-icon>
+                </span>
+            </ion-col>
+        </ion-row>
+        <ion-card class="card">
+            <ion-card-header class="card-header">
+                {{event.title}}
+            </ion-card-header>
+            <ion-card-content class="card-description">
+                {{event.description}}
+                <br/>
+                <hr>
+                <br/>
+                Start Time: {{event.date}} at {{event.start}}<span *ngIf="event.end"> till {{event.end}}</span>
+                <br/>
+                <hr>
+                <br/>
+                Creator: <span class="capitalize">{{event.creator.displayName}}</span>
+            </ion-card-content>
+        </ion-card>
+    </div>
+</ion-content>

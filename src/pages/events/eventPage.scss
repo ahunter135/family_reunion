@@ -1,0 +1,33 @@
+page-event {
+     /* Modal */
+  .main-modal {
+    background-color: rgba(0, 0, 0, 0.4); /* for shadow */
+  }
+
+  .modal {
+    position: absolute;
+    width: 95%;
+    top: 15%;
+    left: 3%;
+    background: #fff;
+    border-radius: 10px;
+    -webkit-box-shadow: 0 10px 6px -6px #777;
+    -moz-box-shadow: 0 10px 6px -6px #777;
+    box-shadow: 0 10px 6px -6px #777;
+  }
+
+  .card-header {
+    text-align: center;
+  }
+
+  .card-description {
+  }
+
+  .close-icon {
+    font-size: 18px;
+  }
+
+  .card {
+      margin-bottom: 35px;
+  }
+}

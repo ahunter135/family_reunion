@@ -61,6 +61,16 @@ export class LoadProvider {
     return userProfile.data().data;
   }
 
+  getGroupEvents = async (group) => {
+    let response = await this.db.collection('groups').doc(group.key).collection('events')
+                          .where("date",  ">=", moment().format("YYYY-MM-DD")).get();
+    let eventArray = [];
+    await response.forEach(doc => {
+      eventArray.push(doc.data());
+    })
+    return eventArray;
+  }
+
   getUserPostsAndConnections = async (user) => {
     let posts = await this.db.collection('user-profiles').doc(user.uid).collection('posts').get();
     let connections = await this.db.collection('user-profiles').doc(user.uid).collection('connections').get();

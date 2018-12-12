@@ -40,6 +40,9 @@ export class UserProfilePage {
     this.userProfile = await this.load.getUser(this.post);
     let data = await this.load.getUserPostsAndConnections(this.userProfile);
     this.numConnections = data.connections;
+    await data.posts.forEach(doc => {
+      if (doc.group === this.post.group) return doc;
+    });
     this.user_posts = await data.posts.sort(function (a, b) {
       return moment.utc(b.timestamp).diff(moment.utc(a.timestamp));
     })

@@ -8,21 +8,25 @@
 
 
 <ion-content padding>
-  <ion-list>
+    <ion-refresher (ionRefresh)="refresh($event)">
+      <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="Pull to refresh"
+        refreshingSpinner="circles"></ion-refresher-content>
+    </ion-refresher>
+  <ion-list no-lines>
     <ion-item class="group-select" no-lines>
         <ion-label>Peep Groups</ion-label>
-        <ion-select [(ngModel)]="activeGroup">
+        <ion-select [(ngModel)]="activeGroup" (ionChange)="changeGroup()">
             <ion-option *ngFor="let g of load.user_groups" [value]="g">{{g.data.group_name}}</ion-option>
         </ion-select>
     </ion-item>
-    <div *ngIf="activeGroup !== null">
-      <ion-item *ngFor="let g of activeGroup.events">
-        <h2 *ngIf="g">{{g.title}}</h2>
-        <h3 *ngIf="g">{{g.description}}</h3>
-        <p *ngIf="g">{{g.start}} - {{g.end}}</p>
-        <button *ngIf="g" ion-button clear item-end>View</button>
-      </ion-item>
-    </div>
+    <ion-item *ngFor="let g of events">
+      <h2 *ngIf="g">{{g.title}}</h2>
+      <h3 *ngIf="g">{{g.description}}</h3>
+      <p *ngIf="g"> {{g.date}} at {{g.start}}<span *ngIf="g.end"> till {{g.end}}</span></p>
+      <button *ngIf="g" ion-button clear item-end (click)="showEvent(g)">View</button>
+    </ion-item>
   </ion-list>
 
 

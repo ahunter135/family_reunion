@@ -36,7 +36,7 @@ import { ChatProvider } from '../providers/chat/chat';
 import { AppVersion } from '@ionic-native/app-version';
 import { ManageGroupPage, GroupPage } from '../pages/manageGroups/manageGroups';
 import { BackgroundMode } from '@ionic-native/background-mode';
-import { EventsPage, CreateEvent } from '../pages/events/events';
+import { EventsPage, CreateEvent, EventPage } from '../pages/events/events';
 import { DatePicker } from '@ionic-native/date-picker';
 
 firebase.initializeApp({
@@ -71,7 +71,8 @@ firebase.initializeApp({
     ManageGroupPage,
     GroupPage,
     EventsPage,
-    CreateEvent
+    CreateEvent,
+    EventPage
   ],
   imports: [
     BrowserModule,
@@ -103,7 +104,8 @@ firebase.initializeApp({
     ManageGroupPage,
     GroupPage,
     EventsPage,
-    CreateEvent
+    CreateEvent,
+    EventPage
   ],
   providers: [
     StatusBar,
