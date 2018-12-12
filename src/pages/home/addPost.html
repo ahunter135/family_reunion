@@ -22,7 +22,7 @@
                 <ion-item>
                     <ion-label>Group</ion-label>
                     <ion-select [(ngModel)]="post.group" class="group-select">
-                        <ion-option *ngFor="let g of load.user_groups" value={{g.data.group_code}}>{{g.data.group_name}}</ion-option>
+                        <ion-option *ngFor="let g of load.user_groups" value={{g.data.group_code}} class="group-select">{{g.data.group_name}}</ion-option>
                     </ion-select>
                 </ion-item>
             </ion-list>

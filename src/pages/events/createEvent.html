@@ -1,0 +1,39 @@
+<ion-content padding>
+    <ion-list class="form">
+        <ion-item class="group-select" no-lines>
+            <ion-label>Peep Groups*</ion-label>
+            <ion-select [(ngModel)]="activeGroup">
+                <ion-option *ngFor="let g of load.user_groups" [value]="g">{{g.data.group_name}}</ion-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item class="title">
+            <ion-label stacked>Event Title*</ion-label>
+            <ion-input [(ngModel)]="event.title" type="text"></ion-input>
+        </ion-item>
+
+        <ion-item class="text-area">
+            <ion-label stacked>Event Description*</ion-label>
+            <ion-textarea [(ngModel)]="event.description" type="text" rows="8"></ion-textarea>
+        </ion-item>
+        
+        <ion-item class="date" no-lines>
+            <ion-label>Event Date*</ion-label>
+            <ion-datetime [(ngModel)]="event.date" displayFormat="DDD MMM D, YYYY" min="{{today}}" max="{{limit}}" [(ngModel)]="event.date"></ion-datetime>
+        </ion-item>
+        <ion-item class="start-time">
+            <ion-label>Event Start Time*</ion-label>
+            <ion-datetime [(ngModel)]="event.start" displayFormat="hh:mm a" [(ngModel)]="event.start"></ion-datetime>
+        </ion-item>
+        <ion-item class="end-time" no-lines>
+            <ion-label>Event End Time</ion-label>
+            <ion-datetime [(ngModel)]="event.end" displayFormat="hh:mm a" [(ngModel)]="event.end"></ion-datetime>
+        </ion-item>
+
+        <ion-item class="submit-button" no-lines>
+            <button ion-button block round (click)="submit()">Submit</button>
+        </ion-item>
+
+        <p class="message">* are required items</p>
+    </ion-list>
+</ion-content>

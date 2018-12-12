@@ -33,10 +33,7 @@
     
         <ion-item>
             <ion-label item-start>Group Code</ion-label>
-            <ion-input placeholder="" *ngIf="group.data.admin === load.user.uid; else showCode"[(ngModel)]="group.data.group_code" [value]="group.data.group_code" autocomplete="on" autocorrect="on"></ion-input>
-            <ng-template #showCode>
-                <ion-input placeholder="" disabled [(ngModel)]="group.data.group_code" [value]="group.data.group_code" autocomplete="on" autocorrect="on"></ion-input>
-            </ng-template>
+            <ion-input placeholder="" disabled [(ngModel)]="group.data.group_code" [value]="group.data.group_code" autocomplete="on" autocorrect="on"></ion-input>
         </ion-item>
 
         <ion-row text-center *ngIf="group.data.admin !== load.user.uid" style="padding-top: 5px;">

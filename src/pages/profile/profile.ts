@@ -124,8 +124,13 @@ export class PopoverPage {
   }
 
   createCode = () => {
-    let createGroupModal = this.modalCtrl.create(CreateGroupPage);
-    createGroupModal.present();
+    if (this.load.user_data.displayName !== '' && this.load.user_data.photoURL !== '') {
+      let createGroupModal = this.modalCtrl.create(CreateGroupPage);
+      createGroupModal.present();
+    } else {
+      alert("Please setup your profile first");
+    }
+    
   }
 
   manageGroups = () => {
@@ -148,6 +153,7 @@ export class PopoverPage {
     let radioAlert = this.alertCtrl.create();
     radioAlert.setTitle('Pick Group');
     for (let i = 0; i < this.load.user_groups.length; i++) {
+      this.load.user_groups[i].data.group_name = this.load.titleCase(this.load.user_groups[i].data.group_name);
       radioAlert.addInput({
         type: 'radio',
         label: this.load.user_groups[i].data.group_name,
@@ -207,6 +213,7 @@ export class ConnectionPage {
 
    showConnection = (user) => {
      if (user.uid !== this.load.user.uid) {
+       console.log(user);
       let userProfileModal = this.modalCtrl.create(UserProfilePage, {post: user});
       userProfileModal.present();
      }
@@ -300,19 +307,23 @@ export class CreateGroupPage {
 
     submit = async () => {
       if (!this.foundGroup) {
-        this.data.members.push(this.load.user_data);
-        this.data.group_name = this.data.group_name.toLowerCase();
-        this.load.createGroup(this.data);
-        this.load.db.collection('user-profiles').doc(this.load.user.uid).collection('groups').add({group_code: this.data.group_code});
-        if (this.load.role === 1) {
-          this.admob.interstitial.config({
-            id: 'ca-app-pub-7853858495093513/4773247160',
-            isTesting: false,
-            autoShow: true
-          });
-          await this.admob.interstitial.prepare();
+        if (this.data.group_name !== '' && this.data.group_code !== '') {
+          this.data.members.push(this.load.user_data);
+          this.data.group_name = this.data.group_name.toLowerCase();
+          this.load.createGroup(this.data);
+          this.load.db.collection('user-profiles').doc(this.load.user.uid).collection('groups').add({group_code: this.data.group_code});
+          if (this.load.role === 1) {
+            this.admob.interstitial.config({
+              id: 'ca-app-pub-7853858495093513/4773247160',
+              isTesting: false,
+              autoShow: true
+            });
+            await this.admob.interstitial.prepare();
+          }
+          this.viewCtrl.dismiss();
+        } else {
+          alert("Group Name and Code is required");
         }
-        this.viewCtrl.dismiss();
       } else {
         alert("Group Code Already Exists!");
       }

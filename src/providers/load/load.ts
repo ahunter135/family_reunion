@@ -206,7 +206,11 @@ export class LoadProvider {
 
   createGroup = async (data) => {
     this.db.collection('groups').add(data);
-  } 
+  }
+
+  addEvent = (event) => {
+    this.db.collection('groups').doc(event.group.key).collection('events').add(event);
+  }
 
   async uploadImage(file) {
     let today = moment().format('YYYYMMDD');
@@ -343,6 +347,20 @@ export class LoadProvider {
       })
     }
   }
+
+  titleCase(str) {
+    if (str) {
+      var splitStr = str.toLowerCase().split(' ');
+      for (var i = 0; i < splitStr.length; i++) {
+          // You do not need to check if i is larger than splitStr length, as your for does that for you
+          // Assign it back to the array
+          splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+      }
+      // Directly return the joined string
+      return splitStr.join(' '); 
+    }
+
+ }
 
 }
 

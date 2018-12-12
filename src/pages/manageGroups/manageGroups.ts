@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ViewController, NavParams, ModalController } from 'ionic-angular';
+import { ViewController, NavParams, ModalController, ActionSheetController } from 'ionic-angular';
 import { LoadProvider } from '../../providers/load/load';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
@@ -45,7 +45,8 @@ import { UserProfilePage } from '../userProfile/userProfile';
       public camera: Camera,
       public imagePicker: ImagePicker,
       public crop: Crop,
-      public file: File
+      public file: File,
+      public actionSheetCtrl: ActionSheetController
      ) {}
   
      ionViewWillLoad = async () => {
@@ -53,33 +54,69 @@ import { UserProfilePage } from '../userProfile/userProfile';
      }
 
      selectAvatar = () => {
-      const options: CameraOptions = {
+      this.showActionSheet();
+     }
+
+    showActionSheet = () => {
+      let options = {
+        targetHeight: 1080,
+        targetWidth: 1080,
         quality: 100,
         destinationType: this.camera.DestinationType.FILE_URI,
-        sourceType: 1,
         encodingType: this.camera.EncodingType.JPEG,
-        mediaType: this.camera.MediaType.PICTURE,
-        cameraDirection: 0,
-        correctOrientation: false,
-        targetHeight: 1080,
-        targetWidth: 1080
+        sourceType: null,
+        allowEdit: true,
+        correctOrientation: true,
+        cameraDirection: 1,
+        saveToPhotoAlbum: false
       };
-      let pickerOptions = {
-        maximumImagesCount: 1,
-        width: 1080,
-        height: 1080,
-        quality: 100
-      };
-      this.imagePicker.getPictures(pickerOptions).then(async (results) => {
-        let newImage = await this.crop.crop(results[0], {
-          quality: 100,
-          targetHeight: 1080,
-          targetWidth: 1080
-        });
-        let newImageURL = await this.encodeImageUri(newImage);
-        let data = await this.load.uploadImage(newImageURL);
-        this.group.data.photoURL = data;
+      const actionSheet = this.actionSheetCtrl.create({
+        title: 'Image Source',
+        buttons: [
+          {
+            text: 'Photo Library',
+            handler: async () => {
+              this.group.data.photoURL = null;
+              options.sourceType = this.camera.PictureSourceType.SAVEDPHOTOALBUM;
+              let imageData = await this.showCameraPhotoLibrary(options);
+              let newImage = await this.crop.crop(imageData , {
+                quality: 100,
+                targetHeight: 1080,
+                targetWidth: 1080
+              });
+              let newImageURL = await this.encodeImageUri(newImage);
+              newImageURL = await this.load.uploadPostImage(newImageURL);
+              this.group.data.photoURL = newImageURL;
+            }
+          },
+          {
+            text: 'Camera',
+            handler: () => {
+              options.sourceType = this.camera.PictureSourceType.CAMERA;
+              this.showCamera(options);
+            }
+          }
+        ]
       });
+      actionSheet.present();
+    }
+  
+    showCamera = async (options) => {
+      this.camera.getPicture(options).then(async (imageData) => {
+        this.group.data.photoURL = null;
+        let newImageURL = await this.encodeImageUri(imageData);
+        newImageURL = await this.load.uploadPostImage(newImageURL);
+        this.group.data.photoURL = newImageURL;  
+      }).catch((err) => {
+        this.viewCtrl.dismiss();
+      })
+    }
+    
+    showCameraPhotoLibrary = async (options) => {
+      let imageData = await this.camera.getPicture(options).catch((err) => {
+        this.viewCtrl.dismiss();
+      });
+      return imageData;
     }
 
     encodeImageUri = async (filePath) => {
@@ -99,7 +136,8 @@ import { UserProfilePage } from '../userProfile/userProfile';
 
     save = () => {
       console.log(this.group);
-      this.load.updateGroupData(this.group)
+      this.load.updateGroupData(this.group);
+      this.viewCtrl.dismiss();
     }
 
     showProfile = (user) => {

@@ -17,7 +17,9 @@ export class SortPostsPipe implements PipeTransform {
     console.log(value);
     if (value.length > 0) {
       let index = value.length - 1;
-      if (value[0].data.postedAt < value[index].data.postedAt) return value.reverse();
+      if (value[0].data || value[index].data) {
+        if (value[0].data.postedAt < value[index].data.postedAt) return value.reverse();
+      }
       else return value;
     }
   }

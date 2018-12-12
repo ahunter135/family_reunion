@@ -12,10 +12,6 @@
           <h6>{{numPosts}}</h6>
           <p no-padding no-margin>Posts</p>
         </ion-col>
-        <ion-col col-3 text-center>
-          <h6>{{numConnections}}</h6>
-          <p no-paddin no-margin>Peeps</p>
-        </ion-col>
       </ion-row>
 
       <!-- Edit/follow button -->
@@ -51,15 +47,15 @@
         <ion-list *ngSwitchCase="'grid'">
           <ion-grid>
             <ion-row >
-              <ion-col col-4 *ngFor="let i of user_posts | sortPosts" (click)="showPostModal(i)" >
-                <img [src]="i.post_imgs[0]" alt="" (press)="onHold(i)" class="grid_img">
+              <ion-col col-4 *ngFor="let i of user_posts" >
+                <img [src]="i.post_imgs[0]" alt="" class="grid_img">
               </ion-col>
             </ion-row>
           </ion-grid>
         </ion-list>
     
         <ion-list *ngSwitchCase="'list'">
-            <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of user_posts | sortPosts">
+            <ion-card padding-left padding-right padding-bottom no-margin class="card" *ngFor="let post of user_posts">
   
                 <ion-item>
                   <ion-avatar item-left>

@@ -35,16 +35,15 @@ page-home {
 
   .story_img_bg {
     width: 70px;
-    padding: 2px;
+    padding: 4px;
     border-radius: 50%;
     padding-bottom: 0;
     transition: all 1s;
-    -webkit-transition: all 0.2s;
-    background: -webkit-linear-gradient(left top, crimson 0%, #f90 100%);
   }
 
   .story_img_bg:active {
-    background: -webkit-linear-gradient(left top, #DD2352 0%, #F1642F 100%);
+    transition: all 1s;
+    background: -webkit-linear-gradient(left top, #FFCC4E 0%, #F19419 100%);
     transform: scale(1.1);
   }
 
@@ -57,6 +56,13 @@ page-home {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 3px
+    margin-top: 3px;
+    text-transform: capitalize;
   }
+
+  .toolbar-background {
+    background-color: #FFCC4E;
+  }
+
+  
 }

@@ -71,11 +71,20 @@ export class HomePage {
   }
 
   showSearch = () => {
-    let searchModal = this.modalCtrl.create(SearchPage);
-    searchModal.present();
-    searchModal.onDidDismiss(data => {
-      
-    });
+    if (this.load.user_data.displayName === null && this.load.user_data.photoURL === null) {
+      let prompt = this.alertCtrl.create({
+        title: 'Setup Profile',
+        subTitle: 'You need to setup your profile before you can post anything!',
+        buttons: ['OK']
+      });
+      prompt.present();
+    } else {
+      let searchModal = this.modalCtrl.create(SearchPage);
+      searchModal.present();
+      searchModal.onDidDismiss(data => {
+        
+      });
+    }
   }
 
   showSettings = () => {
@@ -84,7 +93,7 @@ export class HomePage {
   }
 
   submitPost = () => {
-    if (this.load.user_data.displayName === null || this.load.user_data.photoURL === null) {
+    if (this.load.user_data.displayName === null && this.load.user_data.photoURL === null) {
       let prompt = this.alertCtrl.create({
         title: 'Setup Profile',
         subTitle: 'You need to setup your profile before you can post anything!',
@@ -255,6 +264,9 @@ addAnother = async () => {
  submit = async () => {
    if (this.post.group === null) {
      alert("Please select a group to post to!");
+     return;
+   } else if (this.load.user_data.displayName === null || this.load.user_data.photoURL === null) {
+     alert("Please setup your profile before posting!");
      return;
    }
    this.viewCtrl.dismiss({pendingPosts: this.pendingPosts, post: this.post, numImages: this.numImages});
