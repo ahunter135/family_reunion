@@ -113,11 +113,18 @@ export class LoadProvider {
 
   loadPosts = async () => {
     let self = this;
+    let base = window;
     this.db.collection('user-profiles').doc(this.user.uid).collection('posts').onSnapshot(async function(doc) {
       self.user_posts = [];
       await doc.forEach(element => {
+        let data = element.data();
+        for (let i = 0; i < data.post_imgs.length; i++) {
+          if (data.post_imgs[i].substring(0, 4) !== "http") {
+            data.post_imgs[i] = base.atob(data.post_imgs[i]);
+          }
+        }
         let post = {
-          data: element.data(),
+          data: data,
           user_post_id: element.id
         }
         self.user_posts.push(post);
@@ -166,7 +173,13 @@ export class LoadProvider {
        let posts = await this.db.collection('groups').doc(data.id).collection('posts').get();
        let group_posts = [];
        posts.forEach(doc => {
-         group_posts.push(doc.data());
+         let newData = doc.data();
+         for (let i = 0; i < newData.post_imgs.length; i++) {
+          if (newData.post_imgs[i].substring(0, 4) !== "http") {
+            newData.post_imgs[i] = window.atob(newData.post_imgs[i]);
+          }
+        }
+         group_posts.push(newData);
        });
        let new_group = {
         data: data.data(),
@@ -241,6 +254,9 @@ export class LoadProvider {
   }
 
   uploadPost = async (post) => {
+    for (let i = 0; i < post.post_imgs.length; i++) {
+      post.post_imgs[i] = window.btoa(post.post_imgs[i]);
+    }
     this.db.collection('user-profiles').doc(this.user.uid).collection('posts').add(post);
     let foundGroup = await this.db.collection('groups').where("group_code", "==", post.group).get();
     foundGroup.forEach(group => {
@@ -301,7 +317,13 @@ export class LoadProvider {
     let posts = await this.db.collection('groups').doc(group.key).collection('posts').get();
     let group_posts = [];
     await posts.forEach(doc => {
-      group_posts.push(doc.data());
+      let newData = doc.data();
+      for (let i = 0; i < newData.post_imgs.length; i++) {
+        if (newData.post_imgs[i].substring(0, 4) !== "http") {
+          newData.post_imgs[i] = window.atob(newData.post_imgs[i]);
+        }
+      }
+      group_posts.push(newData);
     });
     let new_group = {
       data: groups.data(),
