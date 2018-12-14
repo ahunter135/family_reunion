@@ -9,18 +9,61 @@
         </ion-row>
         <ion-card class="card">
             <ion-card-header class="card-header">
-                {{event.title}}
+                {{event.data.title}}
             </ion-card-header>
             <ion-card-content class="card-description">
-                {{event.description}}
+                {{event.data.description}}
                 <br/>
                 <hr>
                 <br/>
-                Start Time: {{event.date}} at {{event.start}}<span *ngIf="event.end"> till {{event.end}}</span>
+                Start Time: {{event.data.date}} at {{event.data.start}}<span *ngIf="event.data.end"> till {{event.data.end}}</span>
                 <br/>
                 <hr>
                 <br/>
-                Creator: <span class="capitalize">{{event.creator.displayName}}</span>
+                Creator: <span class="capitalize">{{event.data.creator.displayName}}</span>
+                <div *ngIf="event.data.creator.uid !== load.user_data.uid && found === false; else showDelete">
+                    <br/>
+                    <hr>
+                    <br/>
+                    <ion-row>
+                        <ion-col style="text-align: center;">
+                            <button ion-button color="primary" round (click)="interested()">Interested</button>
+                        </ion-col>
+                    </ion-row>
+                </div>
+                <ng-template #showDelete>
+                    <br/>
+                    <hr>
+                    <br/>
+                    <div *ngIf="event.data.creator.uid === load.user_data.uid">
+                        <ion-row>
+                            <ion-col style="text-align: center;">
+                                <button ion-button color="primary" round (click)="delete()">Delete Event</button>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </ng-template>
+                <br/>
+                <hr>
+                <br/>
+                <p>Attending:</p>
+                <hr>
+                <ion-list>
+                    <ion-item (click)="showProfile(event.creator);">
+                        <ion-avatar item-start>
+                            <img src="{{event.data.creator.photoURL}}" onerror="this.src='./assets/imgs/default-avatar.jpg'">
+                        </ion-avatar>
+                        <h2 class="capitalize">{{event.data.creator.displayName}}</h2>
+                        <p>Organizer</p>
+                    </ion-item>
+                    <ion-item *ngFor="let i of attenders" (click)="showProfile(i);">
+                        <ion-avatar item-start>
+                            <img src="{{i.data.photoURL}}" onerror="this.src='./assets/imgs/default-avatar.jpg'">
+                        </ion-avatar>
+                        <h2 class="capitalize">{{i.data.displayName}}</h2>
+                        <p>{{i.data.info}}</p>
+                    </ion-item>
+                </ion-list>
             </ion-card-content>
         </ion-card>
     </div>

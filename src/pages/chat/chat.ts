@@ -78,7 +78,11 @@ export class ChatPage {
   templateUrl: 'newMessage.html'
 })
 export class NewMessagePage {
-
+  activeGroup = {
+    data: {
+      members: []
+    }
+  }
   constructor(
     public navCtrl: NavController,
     public viewCtrl: ViewController,
@@ -116,7 +120,6 @@ export class ChatDetailPage {
   ) {}
 
   ionViewWillLoad = () => {
-    console.log(this.chat.currentChatPartner);
     let self = this;
     this.load.db.collection('chats').where("pair", "==", this.chat.currentChatPairId).onSnapshot(function(querySnapshot) {
       self.chats = [];
@@ -147,7 +150,7 @@ export class ChatDetailPage {
         sender: sender,
         receiver: receiver,
         pair: this.chat.currentChatPairId,
-        time: moment().format()
+        time: new Date().getTime()
       };
       this.message = "";
       this.chat.addChat(this.chatPayload);

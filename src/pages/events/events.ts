@@ -48,19 +48,30 @@ export class EventsPage {
     if (this.activeGroup !== null) {
       let events = await this.load.getGroupEvents(this.activeGroup);
       events.forEach(doc => {
-        doc.start = moment(doc.start, "hh:mm").format("hh:mm a");
-        if (doc.end) {
-          doc.end = moment(doc.end, "hh:mm").format("hh:mm a");
+        doc.data.start = moment(doc.data.start, "hh:mm").format("hh:mm a");
+        if (doc.data.end) {
+          doc.data.end = moment(doc.data.end, "hh:mm").format("hh:mm a");
         }
-        doc.date = moment(doc.date, "YYYY-MM-DD").format("ddd MMM DD YY");
-      })
+        doc.data.date = moment(doc.data.date, "YYYY-MM-DD").format("ddd MMM DD YY");
+      });
+      console.log(events);
       this.events = events;
     }
+  }
+
+  editEvent = (event) => {
+    let editEventModal = this.modalCtrl.create(EditEvent, {event: event});
+    editEventModal.present();
   }
 
   showEvent = (event) => {
     let eventModal = this.modalCtrl.create(EventPage, {event: event});
     eventModal.present();
+    eventModal.onDidDismiss(data => {
+      if (data) {
+        this.loadEvents();
+      }
+    })
   }
 
   refresh = async (ev) => {
@@ -129,6 +140,9 @@ export class CreateEvent {
 })
 export class EventPage {
   event;
+  activeGroup;
+  attenders = [];
+  found = false;
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -136,5 +150,54 @@ export class EventPage {
     public viewCtrl: ViewController
     ) {
       this.event = navParams.get('event');
+    }
+
+    ionViewWillLoad = async () => {
+      this.loadMembers();
+    }
+
+    loadMembers = async () => {
+      let members = await this.load.getAttenders(this.event);
+      console.log(this.attenders);
+      members.forEach(doc => {
+        let member = {
+          data: doc.data(),
+          key: doc.id
+        };
+        if (doc.data().uid === this.load.user_data.uid) this.found = true;
+        this.attenders.push(member);
+      })
+    }
+
+    interested = () => {
+      if (!this.found) {
+        this.load.isInterested(this.event);
+        this.loadMembers();
+      }
+    }
+
+    delete = () => {
+      this.load.deleteEvent(this.event);
+      this.viewCtrl.dismiss(true);
+    }
+}
+
+@Component({
+  selector: 'page-event',
+  templateUrl: 'editEvent.html'
+})
+export class EditEvent {
+  event;
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public load: LoadProvider,
+    public viewCtrl: ViewController
+    ) {
+      this.event = navParams.get('event');
+      this.event.start = moment(this.event.start);
+      this.event.end = moment(this.event.end);
+      this.event.date = moment(this.event.date);
+      console.log(this.event);
     }
 }

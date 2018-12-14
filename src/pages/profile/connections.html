@@ -11,7 +11,7 @@
     <ion-list>
         <ion-item>
           <ion-label>Peep Groups</ion-label>
-          <ion-select [(ngModel)]="activeGroup" (ionChange)="changeGroup()">
+          <ion-select [(ngModel)]="activeGroup">
               <ion-option *ngFor="let g of load.user_groups" [value]="g">{{g.data.group_name}}</ion-option>
           </ion-select>
         </ion-item>

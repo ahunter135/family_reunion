@@ -132,6 +132,7 @@ import { UserProfilePage } from '../userProfile/userProfile';
 
     leaveGroup = () => {
       this.load.leaveGroup(this.group);
+      this.viewCtrl.dismiss();
     }
 
     save = () => {

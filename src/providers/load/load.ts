@@ -26,7 +26,7 @@ export class LoadProvider {
   numPosts = 0;
   user_posts = [];
   db = firebase.firestore();
-  selectedPage = 1;
+  selectedPage = 2;
   products;
   role;
   user_chats = [];
@@ -66,7 +66,11 @@ export class LoadProvider {
                           .where("date",  ">=", moment().format("YYYY-MM-DD")).get();
     let eventArray = [];
     await response.forEach(doc => {
-      eventArray.push(doc.data());
+      let data = {
+        data: doc.data(),
+        key: doc.id
+      }
+      eventArray.push(data);
     })
     return eventArray;
   }
@@ -235,6 +239,18 @@ export class LoadProvider {
     this.db.collection('groups').doc(event.group.key).collection('events').add(event);
   }
 
+  getAttenders = async (event) => {
+    return await this.db.collection('groups').doc(event.data.group.key).collection('events').doc(event.key).collection('members').get();
+  }
+
+  isInterested = (event) => {
+    this.db.collection('groups').doc(event.data.group.key).collection('events').doc(event.key).collection('members').add(this.user_data);
+  }
+
+  deleteEvent = (event) => {
+    this.db.collection('groups').doc(event.data.group.key).collection('events').doc(event.key).delete();
+  }
+
   async uploadImage(file) {
     let today = moment().format('YYYYMMDD');
     let storageRef = firebase.storage().ref();
@@ -283,7 +299,21 @@ export class LoadProvider {
 
     this.db.collection('user-profiles').doc(this.user.uid).update({
       data: self.user_data
-    })
+    });
+
+    for (let i = 0; i < this.user_groups.length; i++) {
+      let groupKey = this.user_groups[i].key;
+      let members = this.user_groups[i].data.members
+      for (let j = 0; j < members.length; j++) {
+        if (members[j].uid === this.user_data.uid) {
+          members[j] = this.user_data;
+          await this.db.collection('groups').doc(groupKey).update({
+            members: members
+          });
+          break;
+        }
+      }
+    }
   }
 
   joinGroup = (group) => {
@@ -509,8 +539,8 @@ export class SignUpPage {
   ) {}
 
   async submit() {
-    firebase.auth().createUserWithEmailAndPassword(this.user.email, this.user.password);
-    let user = firebase.auth().currentUser;
+    await firebase.auth().createUserWithEmailAndPassword(this.user.email, this.user.password);
+    let user = await firebase.auth().currentUser;
     user.sendEmailVerification();
     this.viewCtrl.dismiss(true);
   }

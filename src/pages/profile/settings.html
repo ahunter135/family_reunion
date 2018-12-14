@@ -23,9 +23,8 @@
             <hr>
             <br/>
             <div class="ads-button">
-                <button ion-button round color="dark" *ngIf="load.user_data.role !== 0" (click)="removeAds()">Remove Ads</button>
-                <button ion-button round color="dark" (click)="restore()">Restore Purchase</button>
-                <button ion-button round small color="light" (click)="viewCtrl.dismiss()">Back</button>
+                <button ion-button round color="primary" *ngIf="load.user_data.role !== 0" (click)="removeAds()">Remove Ads</button>
+                <button ion-button round color="primary" (click)="restore()">Restore Purchase</button>
             </div>
         </ion-card-content>
     </ion-card>

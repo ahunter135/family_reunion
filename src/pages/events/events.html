@@ -22,10 +22,10 @@
         </ion-select>
     </ion-item>
     <ion-item *ngFor="let g of events">
-      <h2 *ngIf="g">{{g.title}}</h2>
-      <h3 *ngIf="g">{{g.description}}</h3>
-      <p *ngIf="g"> {{g.date}} at {{g.start}}<span *ngIf="g.end"> till {{g.end}}</span></p>
-      <button *ngIf="g" ion-button clear item-end (click)="showEvent(g)">View</button>
+      <h2 *ngIf="g">{{g.data.title}}</h2>
+      <h3 *ngIf="g">{{g.data.description}}</h3>
+      <p *ngIf="g"> {{g.data.date}} at {{g.data.start}}<span *ngIf="g.data.end"> till {{g.data.end}}</span></p>
+      <button ion-button clear item-end (click)="showEvent(g)">View</button>
     </ion-item>
   </ion-list>
 

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { ProfilePage } from '../profile/profile';
+import { ProfilePage, SettingsPage } from '../profile/profile';
 import { ChatPage } from '../chat/chat';
 import { HomePage } from '../home/home';
 import { LoadProvider } from '../../providers/load/load';
@@ -16,6 +16,7 @@ export class TabsPage {
   tab2Root = ProfilePage;
   tab3Root = ChatPage;
   tab4Root = EventsPage;
+  tab5Root = SettingsPage;
 
   selectedIndex = this.load.selectedPage;
   constructor(
